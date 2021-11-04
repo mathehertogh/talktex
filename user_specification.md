@@ -64,3 +64,79 @@ TalkTex:
 | caligraphic capital c | \mathcal{C} |
 | bold capital q bar | \bar{\mathbb{Q}} |
 
+### letter
+- `a`|`a`, `b`|`b`, ..., `z`|`z`
+- `capital a`|`A`, `capital b`|`B`, ..., `capital z`|`Z`
+- `alpha`|`\alpha`, `beta`|`\beta`, ..., `omega`|`\omega`
+
+### typesetting
+- `bold`|`\mathbb`
+- `caligraphic`|`\mathcal`
+- `fraktur`|`\mathfrak`
+
+### accent
+- `tilde`|`\tilde`
+- `prime`|`\prime`
+- `bar`|`\bar`
+- `hat`|`\hat`
+
+### variable
+- `letter[l]`|`l`
+- `typesetting[t] variable[v]`|`t{v}`
+- `variable[v] accent[a]`|`a{v}`
+
+### uniop
+- `square root`|`\sqrt`
+- `sin`|`\sin`
+- `cos`|`\cos`
+- `tan`|`\tan`
+- `exp`|`\exp`
+- `log`|`\log`
+- `negation`|`\neg`
+
+### binop
+- `plus`|`+`
+- `minus`|`-`
+- `times`|`\cdot`
+- `divided by`|`/`
+- `over`|`/`
+- `divides`|`\mid`
+- `equals`|`=`
+- `not equal`|`\neq` (unrecognized words are ignored, hence this enables both
+  "a does not equal b" and "a is not equal to b")
+- `less than`|`<`
+- `greater than`|`>`
+- `less or equal`|`\leq`
+- `greater or equal`|`\geq`
+- `isomorphic`|`cong`
+- `equivalent`|`\sim`
+- `and`|`\wedge`
+- `or`|`\vee`
+- `implies`|`\implies`
+- `union`|`\cup`
+- `intersection`|`\cap`
+- `set minus`|`\setminus`
+- `subset`|`\subset`
+- `in`|`\in`
+
+### rangeop
+- `sum`|`\sum`
+- `product`|`\prod`
+- `integral`|`\int`
+
+### range
+- `from expr[a] to expr[b]`|`_{a}^{b}`
+
+### expr
+- `variable[v]`|`v`
+- `uniop[o] expr[a]`|`o(a)`
+- `expr[a] binop[o] expr[b]`|`a o b`
+- `rangeop[o] range[r]`|`{o}{r}`
+
+
+\frac, ^,  
+\forall, \exists, \neg, \Leftrightarrow
+\emptyset,
+\lim, 
+\rightarrow, \leftarrow, \mapsto, \not{...}, \infty
+HOW TO DO PARENTHESES...?
