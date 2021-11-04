@@ -1,4 +1,4 @@
-![TalkTex logo](images/logo-white.png)
+<p align="center"><img src="images/logo-white.png" width="700" /></p>
 
 # Purpose
 
