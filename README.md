@@ -1,4 +1,4 @@
-![TalkTex logo](logo.jpeg)
+![TalkTex logo](images/logo-white.png)
 
 # Purpose
 
