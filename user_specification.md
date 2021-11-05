@@ -125,18 +125,42 @@ TalkTex:
 - `integral`|`\int`
 
 ### range
-- `from expr[a] to expr[b]`|`_{a}^{b}`
+- `FROM expr[a] TO expr[b]`|`_{a}^{b}`
 
-### expr
+### openexpr
 - `variable[v]`|`v`
 - `uniop[o] expr[a]`|`o(a)`
 - `expr[a] binop[o] expr[b]`|`a o b`
-- `rangeop[o] range[r]`|`{o}{r}`
+- `rangeop[o] range[r] expr[a]`|`{o}{r}(a)`
 
+### end
+- `END`|``
+- `TIME_PAUSE`|`` (if you user stops talking for a moment)
+
+### expr
+- `openexpr[a] end[e]`|`a`
+- `openexpr[a]`|`a`
 
 \frac, ^,  
 \forall, \exists, \neg, \Leftrightarrow
 \emptyset,
 \lim, 
 \rightarrow, \leftarrow, \mapsto, \not{...}, \infty
-HOW TO DO PARENTHESES...?
+
+
+
+A **translation** is a triple of: type, phrase, target
+A **terminal** is the simplest kind of translation.
+A **construct** is a combination of terminals, **kerwords** and other constructs.
+
+Our **vocabulary** is the set of all phrases in terminals and keywords.
+
+Parentheses: "open parenthesis" and "close parenthesis"
+
+Ignore all non-recognized text. If these results in conflicts for specific cases, we include those cases explicitly in our vocabulary.
+
+Synonyms: we keep a seperate database of sysonyms of phrases. These synonyms are also listed in the user spec next to the "canonical" phrase.
+
+Timing: a pause in speech will be interpreted as the "END" keyword.
+
+Precedence/priority of construct rules.
