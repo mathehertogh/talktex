@@ -10,7 +10,18 @@ The project is currently under (heavy) development and is not yet functional.
 
 # Installation
 
-This is not yet possible.
+While under heavy development, we have a few installation instructions ready:
+
+## Linux
+1. Install fles and bison using
+```bash
+sudo apt-get install flex bison
+```
+2. Install meson and ninja using
+```bash
+pip3 install meson ninja --user
+```
+See our [Meson-manual](MESON.md) for more information
 
 # User specification
 
