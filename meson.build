@@ -29,3 +29,4 @@ subdir('src/grammar')
 
 #TODO: add to binaries once we implement something here
 # subdir('src/latex-generator')
+# subdir('src/deepspeech')
