@@ -26,7 +26,5 @@ builddir = join_paths(meson.source_root(), builddir_name)
 # binaries
 subdir('src/general')
 subdir('src/grammar')
-
-#TODO: add to binaries once we implement something here
-# subdir('src/latex-generator')
-# subdir('src/deepspeech')
+subdir('src/latex-generator')
+subdir('src/deepspeech')
