@@ -167,8 +167,8 @@ following behaviour. Below "..." denotes a pause in the users speech.
 
 | spoken phrase         | Latex source code translation |
 |-----------------------|-------------------------------|
-| sin a plus b          | \sin( a + b )                 |
-| sin a ... plus b      | \sin( a ) + b                 |
+| sin of a plus b       | \sin( a + b )                 |
+| sin of a ... plus b   | \sin( a ) + b                 |
 
 
 # Ignoring non-vocab words
