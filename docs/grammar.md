@@ -24,8 +24,8 @@ Here is a complete list of TalkTex keywords.
 ---
 **NOTE**: The "..." keyword is not an actual *word*: it denotes a (not too
 small) moment of silence during speech. TalkTex will replace each such silence
-by the keyword "end". Read (this section)[guide.md#Pauses-in-speech]
-of the user guide for more info.
+by the keyword "end". Read [this section](guide.md#Pauses-in-speech) of the user
+guide for more info.
 
 ---
 
@@ -52,15 +52,15 @@ Below we define all constructs of TalkTex.
 |-----------|--------|----------|----------|
 | a         | a      | 10       |          |
 | b         | b      | 10       |          |
-| etc.      | etc.   | 10       |          |
+| etc.      | etc.   | etc.     | etc.     |
 | z         | z      | 10       |          |
 | capital a | A      | 10       |          |
 | capital b | B      | 10       |          |
-| etc.      | etc.   | 10       |          |
+| etc.      | etc.   | etc.     | etc.     |
 | capital z | Z      | 10       |          |
 | alpha     | \alpha | 10       |          |
 | beta      | \beta  | 10       |          |
-| etc.      | etc.   | 10       |          |
+| etc.      | etc.   | etc.     | etc.     |
 | omega     | \omega | 10       |          |
 
 ### TYPESETTING

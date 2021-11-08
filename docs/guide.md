@@ -47,27 +47,26 @@ We start off with the simplest kind of example, namely we will define two
 definitions are denoted as follows.
 
 ## BINOP
-| phrase 			| target	| priority	| synonyms 										|
+| phrase            | target    | priority  | synonyms                                      |
 |-------------------|-----------|-----------|-----------------------------------------------|
-| divided by		| /			| 9			| over											|
-| greater or equal	| \geq		| 9			| greater equal, bigger or equal, bigger equal 	|
+| divided by        | /         | 9         | over                                          |
+| greater or equal  | \geq      | 9         | greater equal, bigger or equal, bigger equal  |
 
 The definition above defines two constructs: the "divided by"-construct and the
 "greater or equal"-construct. Their types are both "BINOP", indicating that
 these are binary oparators. The first construct has phrase "divided by" and
 target "/". This means that when a user says "divided by", TalkTex will
 translate this to the Latex source code "/". This definition hence also defines
-the phrase "divided by" to be a terminal. Both constructs have priority 9, which
-is the priority of terminal constructs. The first construct has one synonym:
-"over". This defines "over" to be a terminal as well and it will be interpreted
-as if the user had said "divided by". Hence also "over" will be translated to
-the Latex source code "/". The second construct has three synonyms, which are
-seperated by commas. So if the user says either "greater equal", "bigger or
-equal", or "bigger equal", then TalkTex will pretend that the user said "greater
-or equal" and hence translate this to "\geq". A construct may also have an empty
-synonyms field, indicating that the construct has no synonyms. Usually we do not
-include the header row in the table above. Each row is always structured as:
-phrase, target, priority, synonyms.
+the phrase "divided by" to be a terminal. Both constructs have priority 10,
+which is the priority of terminal constructs. The first construct has one
+synonym: "over". This defines "over" to be a terminal as well and it will be
+interpreted as if the user had said "divided by". Hence also "over" will be
+translated to the Latex source code "/". The second construct has three
+synonyms, which are seperated by commas. So if the user says either "greater
+equal", "bigger or equal", or "bigger equal", then TalkTex will pretend that the
+user said "greater or equal" and hence translate this to "\geq". A construct may
+also have an empty synonyms field, indicating that the construct has no
+synonyms.
 
 
 # Example: building constructs on top of constructs
@@ -78,17 +77,24 @@ example we will consider VARIABLE-constructs (of type "VARIABLE"). For this we
 first need a few new terminal constructs.
 
 ### LETTER
-| a 		| a 		| 9	| |
-| capital a | A         | 9 | |
-| alpha 	| \alpha	| 9	| |
+| phrase    | target | priority | synonyms |
+|-----------|--------|----------|----------|
+| a         | a      | 10       |          |
+| capital a | A      | 10       |          |
+| alpha     | \alpha | 10       |          |
 
 ### TYPESETTING
-| bold			| \mathbb	| 9	| |
-| caligraphic	| \mathcal	| 9 | |
+| phrase      | target   | priority | synonyms |
+|-------------|----------|----------|----------|
+| bold        | \mathbb  |10        |          |
+| caligraphic | \mathcal |10        |          |
 
 ### ACCENT
-| tilde		| \tilde	| 9 | |
-| hat		| \hat		| 9 | |
+| phrase | target | priority | synonyms |
+|--------|--------|----------|----------|
+| tilde  | \tilde | 10       |          |
+| hat    | \hat   | 10       |          |
+| bar    | \bar   | 10       |          |
 
 Above we have defined LETTER, TYPESETTING and ACCENT constructs. There actually
 exist more letters, accents and typesettings than the ones listed above. But we
@@ -96,9 +102,11 @@ keep it small here. Now we can define variables in TalkTex, i.e. constructs of
 type VARIABLE:
 
 ### VARIABLE
-| LETTER[L] 					| L 		| 6	| |
-| TYPESETTING[T] VARIABLE[V]	| T{ V }	| 5	| |
-| VARIABLE[V] ACCENT[A]			| A{ V }	| 4 | |
+| phrase                     | target | priority | synonyms |
+|----------------------------|--------|----------|----------|
+| LETTER[L]                  | L      | 9        |          |
+| TYPESETTING[T] VARIABLE[V] | T{ V } | 8        |          |
+| VARIABLE[V] ACCENT[A]      | A{ V } | 7        |          |
 
 The phrases above contain words in all-caps. These all caps words denote a
 construct of a specific type. For example the first construct defined above
@@ -113,7 +121,7 @@ typesetting and the variable respectively. The target is defined in terms of
 these aliases. Note that we use raw latex source code mixed with these aliases.
 The constructs above provide us with the following translations.
 
-| spoken phrase 	    | Latex source code translation |
+| spoken phrase         | Latex source code translation |
 |-----------------------|-------------------------------|
 | alpha                 | \alpha                        |
 | caligraphic capital a | \mathcal{ A }                 |
@@ -131,8 +139,10 @@ As mentioned already, constructs may also be build using keywords. Let us give
 an example of how keywords and constructs can be used together to build complex
 constructs.
 
-### FUNC
-| function VARIABLE[F] from VARIABLE[A] to VARIABLE[B]	| F: A \to B | 8	| |
+### OPENFUNC
+| phrase                                           | target     | priority   | synonyms |
+|--------------------------------------------------|------------|------------|----------|
+| function VARIABLE[F] from SYMBOL[A] to SYMBOL[B] | F: A \to B | 5          |          |
 
 Above, the words in small letters ("function", "from" and "to") are keywords.
 These words should be pronounced literally by the user. In contrast, the
@@ -142,7 +152,7 @@ whose parent constructs are of type VARIABLE. This allows us to distinguish them
 appropriately in the target definition. The definition above allows for example
 the following translation.
 
-| spoken phrase 	                                | Latex source code translation   |
+| spoken phrase                                     | Latex source code translation   |
 |---------------------------------------------------|---------------------------------|
 | function f tilde from capital a to bold capital r | \tilde{ f }: A \to \mathbb{ R } |
 
@@ -155,7 +165,7 @@ a small pause between saying consecutive words in a sentence, then TalkTex will
 interpret that pause as if the user had said "end". This facilitates the
 following behaviour. Below "..." denotes a pause in the users speech.
 
-| spoken phrase 	    | Latex source code translation |
+| spoken phrase         | Latex source code translation |
 |-----------------------|-------------------------------|
 | sin a plus b          | \sin( a + b )                 |
 | sin a ... plus b      | \sin( a ) + b                 |
@@ -181,7 +191,7 @@ from a to b", which does match the FUNCTION construct phrase exactly.
 This allows for a broad range of "natural speech" to be blended into the phrases
 you talk into TalkTex, such as the following.
 
-| spoken phrase 	                                      | Latex source code translation |
+| spoken phrase                                           | Latex source code translation |
 |---------------------------------------------------------|-------------------------------|
 | the sine of a ... is always greater or equal than alpha | \sin( a ) \geq \alpha         |
 
@@ -190,12 +200,11 @@ Again, "..." denotes a pause in speech.
 
 # The complete TalkTex grammar
 
-See the (complete TalkTex grammar document)[grammar.md] for information on all
+See the [complete TalkTex grammar document](grammar.md) for information on all
 the vocabulary and grammar rules of TalkTex. These enable the user to *talk Tex*
 in many ways. Let us list some examples below.
 
-
-| spoken phrase 	                                                    | Latex source code translation   |
+| spoken phrase                                                         | Latex source code translation   |
 |-----------------------------------------------------------------------|---------------------------------|
 | for all delta bigger than one we have that zero is smaller than alpha | \forall \alpha > 1 : 0 < \alpha |
 | sum from i equals zero to infinity of f of i                          | \sum_{i=0}^\infty (f(i))        |
