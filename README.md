@@ -23,7 +23,8 @@ pip3 install meson ninja --user
 ```
 See our [Meson-manual](MESON.md) for more information
 
-# User specification
+# User guide
 
-The [user specification](user_specification.md) documents how a user should talk
-to TalkTex in order to obtain certain Latex output.
+The [user guide](docs/guide.md) explains how a user should talk to TalkTex in
+order to obtain certain Latex output. The full TalkTex grammar can be found
+[here](docs/grammar.md).
