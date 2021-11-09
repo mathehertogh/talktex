@@ -3,9 +3,16 @@
 	- input: directly read input
 */
 %option nounput noinput
+%{
+/* lexeme of identifier or reserved word */
+const int MAXTOKENLEN = 40;
+char tokenString[MAXTOKENLEN+1];
+%}
+
 
 /* C declarations */
 %{
+#include <iostream>
 #include "bison.compiler.h"
 
 /* extern C declarations */
@@ -23,14 +30,21 @@ int yylex(void);
 
 %}
 
-letter [a-z]
+letter 			[a-z]
+whitespace 		[ \t]+
+typesetting 	'bold|caligraphic|fraktur'
+accent 			'tilde|hat|bar'
 
 /* Patterns */
 %%
 
 
-{letter} { yylval.letter = yytext[0]; return LETTER; }
+{typesetting} { yylval.phrase = strdup(yytext); std::cout << "typesetting\n"; return TYPESETTING; }
+{accent} { yylval.phrase = strdup(yytext); std::cout << "accent\n"; return ACCENT; }
+{letter} { yylval.letter = yytext[0]; std::cout << yytext << "\n"; return LETTER; }
 
+
+{whitespace}    {/* skip whitespace */}
 <<EOF>>         {return ENDFILE;}
 
 %%

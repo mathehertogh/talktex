@@ -30,6 +30,7 @@ static void yyerror(SyntaxVisitor&, const char*);
 /* Types to pass between lexer, rules and actions*/
 %union {
 	char letter;
+	char* phrase;
 }
 
 /* TODO?: Start symbol */
@@ -38,8 +39,8 @@ static void yyerror(SyntaxVisitor&, const char*);
 /* %start program */
 
 /* Tokens */
-/* basics */
-%token LETTER
+/* variable */
+%token LETTER TYPESETTING ACCENT
 /* endfile */
 %token ENDFILE 0
 
@@ -48,10 +49,18 @@ static void yyerror(SyntaxVisitor&, const char*);
 %%
 
 /* Grammar Rules and Actions */
-letter		: LETTER {
-				std::cout << "letter: " << $<letter>$;
-			};
-
+variable 		: variable ACCENT {
+					std::cout << $<phrase>2 << " \n";
+				} 
+				| typed_variable {
+					std::cout << "\n";
+				};
+typed_variable	: LETTER {
+					std::cout << $<letter>1 << " ";
+				}
+				| TYPESETTING typed_variable {
+					std::cout << $<phrase>1 << " ";
+				};
 %% 
 
 static void yyerror(SyntaxVisitor& vis, const char* s) {
