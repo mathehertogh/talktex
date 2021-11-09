@@ -4,6 +4,7 @@
 #define GRAMMAR_H 
 
 #include <string>
+#include <syntaxvisitor.h>
 
 namespace grammar {
 	/**
@@ -11,7 +12,7 @@ namespace grammar {
 	 * @param input the inputstring
 	 * @return the returncode
 	 */
-	int generate_from_string(const std::string& input);
+	int generate_from_string(const std::string& input, SyntaxVisitor& visitor);
 }
 
 #endif

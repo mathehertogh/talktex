@@ -2,6 +2,8 @@
 %{
 #include <iostream>
 
+#include <syntaxvisitor.h>
+
 /* Import from comp.l*/
 #ifdef __cplusplus
 extern "C" {
@@ -14,10 +16,13 @@ int yywrap(void);
 }
 #endif
 
-static void yyerror(const char*);
-
+static void yyerror(SyntaxVisitor&, const char*);
 
 %}
+
+%code requires {
+	class SyntaxVisitor;
+}
 
 /* Provides more useful error messages */
 %define parse.error verbose
@@ -28,6 +33,8 @@ static void yyerror(const char*);
 }
 
 /* TODO?: Start symbol */
+/* Note: if no start symbol is provided, 
+ 	bison takes the first rule as start */
 /* %start program */
 
 /* Tokens */
@@ -35,6 +42,8 @@ static void yyerror(const char*);
 %token LETTER
 /* endfile */
 %token ENDFILE 0
+
+%parse-param {SyntaxVisitor& vis}
 
 %%
 
@@ -45,9 +54,8 @@ letter		: LETTER {
 
 %% 
 
-static void yyerror(const char* s) {
-    //TODO: something with logger eventually
-    std::cout << "Oh no, an error: " << s << std::endl;
+static void yyerror(SyntaxVisitor& vis, const char* s) {
+    (&vis)->logger.error(-1) << s << '\n';
 }
 
 int yywrap() {
