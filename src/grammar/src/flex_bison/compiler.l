@@ -1,1 +1,36 @@
-/* Here we will define our grammar! */
+/* Let Flex know we will not use yyunput and input functions
+	- unput: fabricate input text to be scanned
+	- input: directly read input
+*/
+%option nounput noinput
+
+/* C declarations */
+%{
+#include "bison.compiler.h"
+
+/* extern C declarations */
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/* should be defined in stdio.h */
+extern int fileno(FILE *);
+int yylex(void);
+
+#if defined(__cplusplus)
+}
+#endif
+
+%}
+
+letter [a-z]
+
+/* Patterns */
+%%
+
+
+{letter} { yylval.letter = yytext[0]; return LETTER; }
+
+<<EOF>>         {return ENDFILE;}
+
+%%
