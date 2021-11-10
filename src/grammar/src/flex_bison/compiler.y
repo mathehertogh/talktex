@@ -1,6 +1,7 @@
 /* C declarations */
 %{
 #include <iostream>
+#include <cstring>
 
 #include <syntaxvisitor.h>
 
@@ -17,6 +18,7 @@ int yywrap(void);
 #endif
 
 static void yyerror(SyntaxVisitor&, const char*);
+static char* ourformat(char*, char*);
 
 %}
 
@@ -49,22 +51,41 @@ static void yyerror(SyntaxVisitor&, const char*);
 %%
 
 /* Grammar Rules and Actions */
+start 			: variable {
+					std::cout << $<phrase>1 << "\n";
+				};
 variable 		: variable ACCENT {
-					std::cout << $<phrase>2 << " \n";
+					$<phrase>$ = ourformat($<phrase>2, $<phrase>1);
 				} 
 				| typed_variable {
-					std::cout << "\n";
+					$<phrase>$ = $<phrase>1;
 				};
 typed_variable	: LETTER {
-					std::cout << $<letter>1 << " ";
+					$<phrase>$ = new char($<letter>1);
 				}
 				| TYPESETTING typed_variable {
-					std::cout << $<phrase>1 << " ";
+					$<phrase>$ = ourformat($<phrase>1, $<phrase>2);
 				};
 %% 
 
 static void yyerror(SyntaxVisitor& vis, const char* s) {
     (&vis)->logger.error(-1) << s << '\n';
+}
+
+//TODO: tmp until we have actual token processing :)
+//Also, very unsafe function
+static char* ourformat(char* a, char* b) {
+	size_t lena = strlen(a);
+	size_t lenb = strlen(b);
+
+	char* c = (char*)malloc(lena + lenb +4);
+	strcpy(c, "\\");
+	strcat(c, a);
+	strcat(c, "{");
+	strcat(c, b);
+	strcat(c, "}");
+
+	return c;
 }
 
 int yywrap() {

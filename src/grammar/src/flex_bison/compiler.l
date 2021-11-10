@@ -32,16 +32,16 @@ int yylex(void);
 
 letter 			[a-z]
 whitespace 		[ \t]+
-typesetting 	'bold|caligraphic|fraktur'
-accent 			'tilde|hat|bar'
+typesetting 	"bold"|"caligraphic"|"fraktur"
+accent 			"tilde"|"hat"|"bar"
 
 /* Patterns */
 %%
 
 
-{typesetting} { yylval.phrase = strdup(yytext); std::cout << "typesetting\n"; return TYPESETTING; }
-{accent} { yylval.phrase = strdup(yytext); std::cout << "accent\n"; return ACCENT; }
-{letter} { yylval.letter = yytext[0]; std::cout << yytext << "\n"; return LETTER; }
+{typesetting} { yylval.phrase = strdup(yytext); return TYPESETTING; }
+{accent} { yylval.phrase = strdup(yytext); return ACCENT; }
+{letter} { yylval.letter = yytext[0]; return LETTER; }
 
 
 {whitespace}    {/* skip whitespace */}
