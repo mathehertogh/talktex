@@ -31,6 +31,7 @@ int yylex(void);
 %}
 
 letter 			[a-z]
+capital  		"capital "[a-z]
 whitespace 		[ \t]+
 typesetting 	"bold"|"caligraphic"|"fraktur"
 accent 			"tilde"|"hat"|"bar"
@@ -42,6 +43,7 @@ accent 			"tilde"|"hat"|"bar"
 {typesetting} { yylval.phrase = strdup(yytext); return TYPESETTING; }
 {accent} { yylval.phrase = strdup(yytext); return ACCENT; }
 {letter} { yylval.letter = yytext[0]; return LETTER; }
+{capital} { yylval.letter = toupper(yytext[8]); return LETTER;}
 
 
 {whitespace}    {/* skip whitespace */}
