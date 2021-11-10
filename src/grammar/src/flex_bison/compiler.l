@@ -38,12 +38,12 @@ accent 			"tilde"|"hat"|"bar"
 
 /* Patterns */
 %%
+"end" 			{ return END; }		
 
-
-{typesetting} { yylval.phrase = strdup(yytext); return TYPESETTING; }
-{accent} { yylval.phrase = strdup(yytext); return ACCENT; }
-{letter} { yylval.letter = yytext[0]; return LETTER; }
-{capital} { yylval.letter = toupper(yytext[8]); return LETTER;}
+{typesetting} 	{ yylval.phrase = strdup(yytext); return TYPESETTING; }
+{accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }
+{letter} 		{ yylval.letter = yytext[0]; return LETTER; }
+{capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER;}
 
 
 {whitespace}    {/* skip whitespace */}

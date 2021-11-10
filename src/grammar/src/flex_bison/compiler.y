@@ -43,6 +43,8 @@ static char* ourformat(char*, char*);
 /* Tokens */
 /* variable */
 %token LETTER TYPESETTING ACCENT
+/* end */
+%token END
 /* endfile */
 %token ENDFILE 0
 
@@ -51,8 +53,12 @@ static char* ourformat(char*, char*);
 %%
 
 /* Grammar Rules and Actions */
-start 			: variable {
+expr 			: openexpr end {
 					std::cout << $<phrase>1 << "\n";
+				};
+end 			: END | %empty; /* either the `end` keyword or empty. In both cases: do nothing */
+openexpr 		: variable { /* should become symbol */
+					$<phrase>$ = $<phrase>1;
 				};
 variable 		: variable ACCENT {
 					$<phrase>$ = ourformat($<phrase>2, $<phrase>1);
