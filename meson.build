@@ -9,12 +9,24 @@ flex_gen = generator(
     output: ['flex.@BASENAME@.cpp', 'flex.@BASENAME@.h'],
     arguments: [ '--outfile=@OUTPUT0@', '--header-file=@OUTPUT1@', '@INPUT@'])
 
-# -Wcounterexamples available on version 3.7.6
+
 bison = find_program('bison', required: true)
+
+# check bison version
+version_checker = find_program('version_extractor.sh', required: true)
+r = run_command(version_checker, check: true)
+version = r.stdout().strip()
+# -Wcounterexamples available on version 3.7.6
+if version.version_compare('>=3.7.6')
+    args = [ '-Wall', '-v', '-Wcounterexamples', '--output=@OUTPUT0@', '--defines=@OUTPUT1@', '@INPUT@' ]
+else 
+    args =  [ '-Wall', '-v', '--output=@OUTPUT0@', '--defines=@OUTPUT1@', '@INPUT@' ]
+endif
+
 bison_gen = generator(
     bison,
     output: ['bison.@BASENAME@.cpp', 'bison.@BASENAME@.h'],
-    arguments: [ '-Wall', '-v', '-Wcounterexamples', '--output=@OUTPUT0@', '--defines=@OUTPUT1@', '@INPUT@' ])
+    arguments: args)
 
 # Variables
 ## Global variables
