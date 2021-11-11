@@ -34,6 +34,7 @@ static char* texify(char*);
 %union {
 	char letter;
 	char* phrase;
+	char digit;
 }
 
 /* TODO?: Start symbol */
@@ -43,7 +44,7 @@ static char* texify(char*);
 
 /* Tokens */
 /* variable */
-%token LETTER TYPESETTING ACCENT GREEK
+%token LETTER TYPESETTING ACCENT GREEK DIGIT
 /* end */
 %token END
 /* endfile */
@@ -59,9 +60,15 @@ expr 			: openexpr end {
 					std::cout << $<phrase>1 << "\n";
 				};
 end 			: END | %empty; /* either the `end` keyword or empty. In both cases: do nothing */
-openexpr 		: variable { /* should become symbol */
+openexpr 		: symbol { 
 					$<phrase>$ = $<phrase>1;
 				};
+symbol 			: DIGIT {
+					$<phrase>$ = new char($<digit>1);
+				}
+				| variable { 
+					$<phrase>$ = $<phrase>1;
+				} 
 variable 		: variable ACCENT {
 					$<phrase>$ = ourformat($<phrase>2, $<phrase>1);
 				} 
