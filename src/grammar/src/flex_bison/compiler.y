@@ -25,6 +25,7 @@ static char* texify(const char*);
 static char* parenthesis(const char*);
 static char* concat(const char*, const char*, const char*);
 static char* char_to_string(char);
+static char* scope(const char*);
 
 %}
 
@@ -53,7 +54,7 @@ static char* char_to_string(char);
 /* keywords */
 %token OF FROM TO FUNCTION FRACTION OVER MAPS MAPPING OPEN CLOSE PARENTHESIS END
 /* operators */
-%token UNOP MINUS
+%token UNOP MINUS BINOP NOT
 /* endfile */
 %token ENDFILE 0
 
@@ -90,8 +91,10 @@ openexpr 		: symbol {
 				}
 				| unop expr {
 					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
-				}
-				;
+				} 
+				| expr binop expr {
+					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>1));
+				};
 symbol 			: DIGIT {
 					$<phrase>$ = char_to_string($<digit>1);
 				}
@@ -140,6 +143,12 @@ unop 			: UNOP {
 				| MINUS {
 					$<phrase>$ = char_to_string('-');
 				};
+binop 			: BINOP {
+					$<phrase>$ = texify($<phrase>1);
+				}
+				| NOT binop {
+					$<phrase>$ = concat("\not", " ", $<phrase>2);
+				}
 
 
 %% 
@@ -226,6 +235,18 @@ static char* char_to_string(char c) {
 	character[0] = c;
 	character[1] = '\0';
 	return character;
+}
+
+//TODO: tmp until we have actual token processing :)
+static char* scope(const char* a) {
+	size_t lena = strlen(a);
+	char* b = (char*)malloc(lena+3);
+
+	strcpy(b, "{");
+	strcat(b, a);
+	strcat(b, "}");
+
+	return b;
 }
 
 int yywrap() {

@@ -39,6 +39,7 @@ accent 			"tilde"|"hat"|"bar"
 greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
 symbol 			"empty set"|"infinity"
 unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"
+binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"less"|"greater"|"less equal"|"greater equal"|"and"|"or"|"implies"|"equivalent"|"union"|"intersection"|"set minus"|"subset"|"in"
 
 /* Patterns */
 %%
@@ -55,6 +56,7 @@ unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"
 "parenthesis"	{ return PARENTHESIS; }
 "end" 			{ return END; }
 "minus"			{ return MINUS; }
+"not"			{ return NOT; }
 
 {typesetting} 	{ yylval.phrase = strdup(yytext); return TYPESETTING; }
 {accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }
@@ -64,6 +66,7 @@ unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"
 {greek}			{ yylval.phrase = strdup(yytext); return GREEK; }
 {symbol}   		{ yylval.phrase = strdup(yytext); return SYMBOL; }
 {unop}			{ yylval.phrase = strdup(yytext); return UNOP; }
+{binop} 		{ yylval.phrase = strdup(yytext); return BINOP; }
 
 
 {whitespace}    {/* skip whitespace */}
