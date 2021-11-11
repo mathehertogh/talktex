@@ -43,8 +43,8 @@ static char* texify(char*);
 /* %start program */
 
 /* Tokens */
-/* variable */
-%token LETTER TYPESETTING ACCENT GREEK DIGIT
+/* symbol */
+%token LETTER TYPESETTING ACCENT GREEK DIGIT SYMBOL
 /* end */
 %token END
 /* endfile */
@@ -55,6 +55,7 @@ static char* texify(char*);
 %%
 
 /* TODO: memory managament! */
+/* TODO: build actual SyntaxTree */
 /* Grammar Rules and Actions */
 expr 			: openexpr end {
 					std::cout << $<phrase>1 << "\n";
@@ -68,7 +69,10 @@ symbol 			: DIGIT {
 				}
 				| variable { 
 					$<phrase>$ = $<phrase>1;
-				} 
+				}
+				| SYMBOL {
+					$<phrase>$ = texify($<phrase>1);
+				};
 variable 		: variable ACCENT {
 					$<phrase>$ = ourformat($<phrase>2, $<phrase>1);
 				} 
@@ -86,7 +90,7 @@ letter 			: LETTER {
 				}
 				| GREEK {
 					$<phrase>$ = texify($<phrase>1);
-				}
+				};
 %% 
 
 static void yyerror(SyntaxVisitor& vis, const char* s) {

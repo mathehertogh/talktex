@@ -37,6 +37,7 @@ whitespace 		[ \t]+
 typesetting 	"bold"|"caligraphic"|"fraktur"
 accent 			"tilde"|"hat"|"bar"
 greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
+symbol 			"empty set"|"infinity"
 
 /* Patterns */
 %%
@@ -45,9 +46,10 @@ greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"
 {typesetting} 	{ yylval.phrase = strdup(yytext); return TYPESETTING; }
 {accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }
 {letter} 		{ yylval.letter = yytext[0]; return LETTER; }
+{digit}			{ yylval.digit = yytext[0]; return DIGIT; }
 {capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER; }
 {greek}			{ yylval.phrase = strdup(yytext); return GREEK; }
-{digit}			{ yylval.digit = yytext[0]; return DIGIT; }
+{symbol}   		{ yylval.phrase = strdup(yytext); return SYMBOL; }
 
 
 {whitespace}    {/* skip whitespace */}
