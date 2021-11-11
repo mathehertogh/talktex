@@ -41,7 +41,18 @@ symbol 			"empty set"|"infinity"
 
 /* Patterns */
 %%
-"end" 			{ return END; }		
+"of"			{ return OF; }
+"from"			{ return FROM; }
+"to"			{ return TO; }
+"function" 		{ return FUNCTION; }
+"fraction"		{ return FRACTION; }
+"over"			{ return OVER; }
+"maps"			{ return MAPS; }
+"mapping"		{ return MAPPING; }
+"open"   		{ return OPEN; }
+"close"			{ return CLOSE; }
+"parenthesis"	{ return PARENTHESIS; }
+"end" 			{ return END; }
 
 {typesetting} 	{ yylval.phrase = strdup(yytext); return TYPESETTING; }
 {accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }

@@ -18,8 +18,9 @@ int yywrap(void);
 #endif
 
 static void yyerror(SyntaxVisitor&, const char*);
-static char* ourformat(char*, char*);
-static char* texify(char*);
+static char* ourformat(const char*, const char*);
+static char* ourformat(const char*, const char*, const char*);
+static char* texify(const char*);
 
 %}
 
@@ -45,8 +46,8 @@ static char* texify(char*);
 /* Tokens */
 /* symbol */
 %token LETTER TYPESETTING ACCENT GREEK DIGIT SYMBOL
-/* end */
-%token END
+/* keywords */
+%token OF FROM TO FUNCTION FRACTION OVER MAPS MAPPING OPEN CLOSE PARENTHESIS END
 /* endfile */
 %token ENDFILE 0
 
@@ -57,11 +58,17 @@ static char* texify(char*);
 /* TODO: memory managament! */
 /* TODO: build actual SyntaxTree */
 /* Grammar Rules and Actions */
-expr 			: openexpr end {
+start 			: expr {
 					std::cout << $<phrase>1 << "\n";
+				};
+expr 			: openexpr end {
+					$<phrase>$ = $<phrase>1;
 				};
 end 			: END | %empty; /* either the `end` keyword or empty. In both cases: do nothing */
 openexpr 		: symbol { 
+					$<phrase>$ = $<phrase>1;
+				}
+				| frac {
 					$<phrase>$ = $<phrase>1;
 				};
 symbol 			: DIGIT {
@@ -91,6 +98,9 @@ letter 			: LETTER {
 				| GREEK {
 					$<phrase>$ = texify($<phrase>1);
 				};
+frac 			: FRACTION expr OVER expr {
+					$<phrase>$ = ourformat("frac", $<phrase>2, $<phrase>4);
+				};
 %% 
 
 static void yyerror(SyntaxVisitor& vis, const char* s) {
@@ -98,7 +108,7 @@ static void yyerror(SyntaxVisitor& vis, const char* s) {
 }
 
 //TODO: tmp until we have actual token processing :)
-static char* ourformat(char* a, char* b) {
+static char* ourformat(const char* a, const char* b) {
 	size_t lena = strlen(a);
 	size_t lenb = strlen(b);
 
@@ -113,7 +123,26 @@ static char* ourformat(char* a, char* b) {
 }
 
 //TODO: tmp until we have actual token processing :)
-static char* texify(char* a) {
+static char* ourformat(const char* a, const char* b, const char* c) {
+	size_t lena = strlen(a);
+	size_t lenb = strlen(b);
+	size_t lenc = strlen(c);
+
+	char* d = (char*)malloc(lena + lenb + lenc +6);
+	strcpy(d, "\\");
+	strcat(d, a);
+	strcat(d, "{");
+	strcat(d, b);
+	strcat(d, "}");
+	strcat(d, "{");
+	strcat(d, c);
+	strcat(d, "}");
+
+	return d;
+}
+
+//TODO: tmp until we have actual token processing :)
+static char* texify(const char* a) {
 	size_t lena = strlen(a);
 	char* b = (char*)malloc(lena + 2);
 
