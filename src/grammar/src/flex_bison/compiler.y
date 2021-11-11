@@ -56,6 +56,9 @@ static char* concat(const char*, const char*, const char*);
 /* endfile */
 %token ENDFILE 0
 
+/* fixing shift/reduce conflict */
+%right NOEND END
+
 %parse-param {SyntaxVisitor& vis}
 
 %%
@@ -66,10 +69,12 @@ static char* concat(const char*, const char*, const char*);
 start 			: expr {
 					std::cout << $<phrase>1 << "\n";
 				};
-expr 			: openexpr end {
+expr 			: openexpr %prec NOEND {
+					$<phrase>$ = $<phrase>1;
+				}
+				| openexpr END {
 					$<phrase>$ = $<phrase>1;
 				};
-end 			: END | %empty; /* either the `end` keyword or empty. In both cases: do nothing */
 openexpr 		: symbol { 
 					$<phrase>$ = $<phrase>1;
 				}
@@ -117,6 +122,9 @@ unop 			: UNOP {
 					$<phrase>$ = concat(texify($<phrase>1), "", " ");
 				}
 				| MINUS {
+					char* minus = (char*)malloc(2*sizeof(char));
+					minus[0] = '-';
+					minus[1] = '\0';
 					$<phrase>$ = new char('-');
 				};
 
