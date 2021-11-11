@@ -24,6 +24,7 @@ static char* ourformat(const char*, const char*, const char*);
 static char* texify(const char*);
 static char* parenthesis(const char*);
 static char* concat(const char*, const char*, const char*);
+static char* char_to_string(char);
 
 %}
 
@@ -81,6 +82,9 @@ openexpr 		: symbol {
 				| frac {
 					$<phrase>$ = $<phrase>1;
 				}
+				| func {
+					$<phrase>$ = $<phrase>1;
+				}
 				| unop OF expr {
 					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
 				}
@@ -89,7 +93,7 @@ openexpr 		: symbol {
 				}
 				;
 symbol 			: DIGIT {
-					$<phrase>$ = new char($<digit>1);
+					$<phrase>$ = char_to_string($<digit>1);
 				}
 				| variable { 
 					$<phrase>$ = $<phrase>1;
@@ -110,7 +114,7 @@ typed_variable	: letter {
 					$<phrase>$ = ourformat($<phrase>1, $<phrase>2);
 				};
 letter 			: LETTER {
-					$<phrase>$ = new char($<letter>1);
+					$<phrase>$ = char_to_string($<letter>1);
 				}
 				| GREEK {
 					$<phrase>$ = texify($<phrase>1);
@@ -118,14 +122,23 @@ letter 			: LETTER {
 frac 			: FRACTION expr OVER expr {
 					$<phrase>$ = ourformat("frac", $<phrase>2, $<phrase>4);
 				};
+func 			: openfunc mapsto {
+					$<phrase>$ = concat($<phrase>1, ", ", $<phrase>2);
+				}
+				| openfunc {
+					$<phrase>$ = $<phrase>1;
+				};
+openfunc 		: FUNCTION variable FROM symbol TO symbol {
+					$<phrase>$ = concat($<phrase>2, ": ", concat($<phrase>4, " \\to ", $<phrase>6));
+				};
+mapsto 			: MAPS expr TO expr {
+					$<phrase>$ = concat($<phrase>2, " \\mapsto ", $<phrase>4);
+				};
 unop 			: UNOP { 
 					$<phrase>$ = concat(texify($<phrase>1), "", " ");
 				}
 				| MINUS {
-					char* minus = (char*)malloc(2*sizeof(char));
-					minus[0] = '-';
-					minus[1] = '\0';
-					$<phrase>$ = new char('-');
+					$<phrase>$ = char_to_string('-');
 				};
 
 
@@ -205,6 +218,14 @@ static char* concat(const char* a, const char* delim, const char* b) {
 	strcat(c, b);
 
 	return c;	
+}
+
+//TODO: tmp until we have actual token processing :)
+static char* char_to_string(char c) {
+	char* character = (char*)malloc(2*sizeof(char));
+	character[0] = c;
+	character[1] = '\0';
+	return character;
 }
 
 int yywrap() {
