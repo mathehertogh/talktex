@@ -47,26 +47,24 @@ We start off with the simplest kind of example, namely we will define two
 definitions are denoted as follows.
 
 ## BINOP
-| phrase            | target    | priority  | synonyms                                      |
-|-------------------|-----------|-----------|-----------------------------------------------|
-| divided by        | /         | 9         | over                                          |
-| greater or equal  | \geq      | 9         | greater equal, bigger or equal, bigger equal  |
+| phrase        | target    | priority  | synonyms                   |
+|---------------|-----------|-----------|----------------------------|
+| divided by    | /         | 10        |                            |
+| greater equal | \geq      | 11        | bigger equal, larger equal |
+| equal         | =         | 10        | equals                     |
 
-The definition above defines two constructs: the "divided by"-construct and the
-"greater or equal"-construct. Their types are both "BINOP", indicating that
-these are binary oparators. The first construct has phrase "divided by" and
-target "/". This means that when a user says "divided by", TalkTex will
-translate this to the Latex source code "/". This definition hence also defines
-the phrase "divided by" to be a terminal. Both constructs have priority 10,
-which is the priority of terminal constructs. The first construct has one
-synonym: "over". This defines "over" to be a terminal as well and it will be
-interpreted as if the user had said "divided by". Hence also "over" will be
-translated to the Latex source code "/". The second construct has three
-synonyms, which are seperated by commas. So if the user says either "greater
-equal", "bigger or equal", or "bigger equal", then TalkTex will pretend that the
-user said "greater or equal" and hence translate this to "\geq". A construct may
-also have an empty synonyms field, indicating that the construct has no
-synonyms.
+The definition above defines three constructs: the "divided by"-construct, the
+"greater equal"-construct and the "equal"-construct. Their types are all
+"BINOP", indicating that these are binary oparators. The first construct has
+phrase "divided by" and target "/". This means that when a user says "divided
+by", TalkTex will translate this to the Latex source code "/". This definition
+hence also defines the phrase "divided by" to be a terminal. The "greater
+equal"-construct has the higher priority 11, while the other two have priority
+10. This ensures that we do not interpret the phrase "equal" as an equal sign if
+the word "greater" directly precedes it. The "greater equal"-construct has two
+synonyms: "bigger equal" and "larger equal". This defines these two phrases to
+be terminals as well and both are translated to the Latex source code "/" as
+well.
 
 
 # Example: building constructs on top of constructs

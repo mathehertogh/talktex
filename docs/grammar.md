@@ -106,30 +106,30 @@ Below we define all constructs of TalkTex.
 | exists      | \exists | 10       |           |
 
 ### BINOP
-| phrase        | target          | priority | synonyms       |
-|---------------|-----------------|----------|----------------|
-| plus          | +               | 10       |                |
-| minus         | -               | 10       |                |
-| times         | \cdot           | 10       |                |
-| power         | ^               | 10       |                |
-| divided by    | /               | 10       | pipe           |
-| divides       | \mid            | 10       |                |
-| equal         | =               | 10       | equals         |
-| isomorphic    | \cong           | 10       |                |
-| less          | <               | 10       | smaller        |
-| greater       | >               | 10       | bigger         |
-| less equal    | \leq            | 11       | smaller equal  |
-| greater equal | \geq            | 11       | bigger equal   |
-| and           | \wedge          | 10       |                |
-| or            | \vee            | 10       |                |
-| implies       | \implies        | 10       |                |
-| equivalent    | \Leftrightarrow | 10       |                |
-| union         | \cup            | 10       |                |
-| intersection  | \cap            | 10       | intersected    |
-| set minus     | \setminus       | 10       | set difference |
-| subset        | \subset         | 10       | included in    |
-| in            | \in             | 10       | element of     |
-| not BINOP[O]  | \not O          | 9        |                |
+| phrase        | target          | priority | synonyms                   |
+|---------------|-----------------|----------|----------------------------|
+| plus          | +               | 10       |                            |
+| minus         | -               | 10       |                            |
+| times         | \cdot           | 10       |                            |
+| power         | ^               | 10       |                            |
+| divided by    | /               | 10       | pipe                       |
+| divides       | \mid            | 10       |                            |
+| equal         | =               | 10       | equals                     |
+| isomorphic    | \cong           | 10       |                            |
+| less          | <               | 10       | smaller                    |
+| greater       | >               | 10       | bigger, larger             |
+| less equal    | \leq            | 11       | smaller equal              |
+| greater equal | \geq            | 11       | bigger equal, larger equal |
+| and           | \wedge          | 10       |                            |
+| or            | \vee            | 10       |                            |
+| implies       | \implies        | 10       |                            |
+| equivalent    | \Leftrightarrow | 10       |                            |
+| union         | \cup            | 10       |                            |
+| intersection  | \cap            | 10       | intersected                |
+| set minus     | \setminus       | 10       | set difference             |
+| subset        | \subset         | 10       | included in                |
+| in            | \in             | 10       | element of                 |
+| not BINOP[O]  | \not O          | 9        |                            |
 
 ### RANGEOP
 | phrase   | target | priority | synonyms |
@@ -154,15 +154,15 @@ Below we define all constructs of TalkTex.
 | function VARIABLE[F] from SYMBOL[A] to SYMBOL[B] | F: A \to B | 5          |          |
 
 ### MAPSTO
-| phrase                  | target         | priority | synonyms                   |
-|-------------------------|----------------|----------|----------------------------|
-| maps EXPR[X] to EXPR[Y] | F, X \mapsto Y | 5        | mapping EXPR[X] to EXPR[Y] |
+| phrase                  | target      | priority | synonyms                   |
+|-------------------------|-------------|----------|----------------------------|
+| maps EXPR[X] to EXPR[Y] | X \mapsto Y | 5        | mapping EXPR[X] to EXPR[Y] |
 
 ### FUNC
-| phrase            | target | priority | synonyms |
-|-------------------|--------|----------|----------|
-| FUNC[F] MAPSTO[M] | F, M   | 4        |          |
-| FUNC[F]           | F      | 3        |          |
+| phrase                | target | priority | synonyms |
+|-----------------------|--------|----------|----------|
+| OPENFUNC[F] MAPSTO[M] | F, M   | 4        |          |
+| OPENFUNC[F]           | F      | 3        |          |
 
 ### OPENEXPR
 | phrase                                     | target            | priority | synonyms |
