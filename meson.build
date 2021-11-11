@@ -13,7 +13,7 @@ bison = find_program('bison', required: true)
 bison_gen = generator(
     bison,
     output: ['bison.@BASENAME@.cpp', 'bison.@BASENAME@.h'],
-    arguments: [ '-Wall', '--output=@OUTPUT0@', '--defines=@OUTPUT1@', '@INPUT@' ])
+    arguments: [ '-Wall', '-v', '--output=@OUTPUT0@', '--defines=@OUTPUT1@', '@INPUT@' ])
 
 # Variables
 ## Global variables

@@ -80,8 +80,9 @@ openexpr 		: symbol {
 					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
 				}
 				| unop expr {
-					$<phrase>$ = concat($<phrase>1, " ", $<phrase>2);
-				};
+					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
+				}
+				;
 symbol 			: DIGIT {
 					$<phrase>$ = new char($<digit>1);
 				}
@@ -113,7 +114,7 @@ frac 			: FRACTION expr OVER expr {
 					$<phrase>$ = ourformat("frac", $<phrase>2, $<phrase>4);
 				};
 unop 			: UNOP { 
-					$<phrase>$ = texify($<phrase>1);
+					$<phrase>$ = concat(texify($<phrase>1), "", " ");
 				}
 				| MINUS {
 					$<phrase>$ = new char('-');
