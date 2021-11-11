@@ -31,7 +31,7 @@ Our grammar allows a user to build up more complicated sentences using terminals
 and keywords. Rules for how to build up more complicated (parts of) sentences
 are defined by **constructs**. A construct consists of five pieces of
 information, called its **type**, **phrase**, **target**, **priority** and
-**synonyms**. The type declared what kind of construct this is. The phrase
+**synonyms**. The type declares what kind of construct this is. The phrase
 indicates the words spoken by the user and the target gives the corresponding
 Latex source code translation. The priority indicates in which order this
 construct should be applied with respect to other available constructs: higher
@@ -72,7 +72,9 @@ well.
 Next we will look at general constructs. Next to terminals and keywords,
 constructs may also use phrases of other constructs in their own phrases. As our
 example we will consider VARIABLE-constructs (of type "VARIABLE"). For this we
-first need a few new terminal constructs.
+first need a few new terminal constructs. We simplified the definition of LETTER
+a little bit for this exposition. See the [reference](grammer.md) for the full
+definition.
 
 ### LETTER
 | phrase    | target | priority | synonyms |
@@ -133,7 +135,7 @@ have been "\mathbb{ \hat{ A } }".
 
 # Example: constructs using keywords
 
-As mentioned already, constructs may also be build using keywords. Let us give
+As mentioned already, constructs may also be built using keywords. Let us give
 an example of how keywords and constructs can be used together to build complex
 constructs.
 

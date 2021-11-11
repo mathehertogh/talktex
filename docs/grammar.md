@@ -7,6 +7,7 @@ This document defines the complete TalkTex grammar. Read the
 
 Here is a complete list of TalkTex keywords.
 
+- capital
 - of
 - from
 - to
@@ -47,21 +48,23 @@ Below we define all constructs of TalkTex.
 | eight  | 8      | 10       |          |
 | nine   | 9      | 10       |          |
 
-### LETTER
+### SMALLLETTER
 | phrase    | target | priority | synonyms |
 |-----------|--------|----------|----------|
-| a         | a      | 10       |          |
-| b         | b      | 10       |          |
+| a         | a      | 12       |          |
+| b         | b      | 12       |          |
 | etc.      | etc.   | etc.     | etc.     |
-| z         | z      | 10       |          |
-| capital a | A      | 10       |          |
-| capital b | B      | 10       |          |
+| z         | z      | 12       |          |
+| alpha     | \alpha | 12       |          |
+| beta      | \beta  | 12       |          |
 | etc.      | etc.   | etc.     | etc.     |
-| capital z | Z      | 10       |          |
-| alpha     | \alpha | 10       |          |
-| beta      | \beta  | 10       |          |
-| etc.      | etc.   | etc.     | etc.     |
-| omega     | \omega | 10       |          |
+| omega     | \omega | 12       |          |
+
+### LETTER
+| phrase                 | target                 | priority | synonyms |
+|------------------------|------------------------|----------|----------|
+| capital SMALLLETTER[L] | \MakeUppercase{L}      | 11       |          |
+| SMALLLETTER[L]         | L                      | 10       |          |
 
 ### TYPESETTING
 | phrase      | target    | priority | synonyms |
@@ -92,7 +95,7 @@ Below we define all constructs of TalkTex.
 | DIGIT[D]    | D         | 9        |          |
 | VARIABLE[V] | V         | 6        |          | 
 
-### UNIOP
+### UNOP
 | phrase      | target  | priority | synonyms  |
 |-------------|---------|----------|-----------|
 | square root | \sqrt   | 10       |           |
@@ -170,8 +173,8 @@ Below we define all constructs of TalkTex.
 | SYMBOL[S]                                  | S                 | 2        |          |
 | FRAC[F]                                    | F                 | 2        |          |
 | FUNC[F]                                    | F                 | 2        |          |
-| UNIOP[O] of EXPR[A]                        | O\left( A \right) | 2        |          |
-| UNIOP[O] EXPR[A]                           | O A               | 2        |          |
+| UNOP[O] of EXPR[A]                         | O\left( A \right) | 2        |          |
+| UNOP[O] EXPR[A]                            | O A               | 2        |          |
 | EXPR[A] BINOP[O] EXPR[B]                   | {A}O{B}           | 2        |          |
 | RANGEOP[O] RANGE[R] EXPR[A]                | OR(A)             | 2        |          |
 | open parenthesis EXPR[A] close parenthesis | \left( A \right)  | 2        |          |
