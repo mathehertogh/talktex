@@ -3,7 +3,8 @@
 #include <grammar.h>
 #include <syntaxvisitor.h>
 
-const char* tests[] = {"b", "caligraphic b", "b tilde", "bold b hat", "capital a", "bold capital a hat"};
+const char* tests[] = 	{"b", "caligraphic b", "b tilde", "bold b hat", "capital a", "bold capital a hat", 
+						"alpha", "alpha tilde"};
 
 int main() {
 	Logger logger(std::cerr, std::cerr, std::cerr);

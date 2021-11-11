@@ -35,6 +35,7 @@ capital  		"capital "[a-z]
 whitespace 		[ \t]+
 typesetting 	"bold"|"caligraphic"|"fraktur"
 accent 			"tilde"|"hat"|"bar"
+greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
 
 /* Patterns */
 %%
@@ -44,6 +45,7 @@ accent 			"tilde"|"hat"|"bar"
 {accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }
 {letter} 		{ yylval.letter = yytext[0]; return LETTER; }
 {capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER;}
+{greek}			{ yylval.phrase = strdup(yytext); return GREEK;}
 
 
 {whitespace}    {/* skip whitespace */}

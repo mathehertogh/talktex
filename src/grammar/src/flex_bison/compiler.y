@@ -19,6 +19,7 @@ int yywrap(void);
 
 static void yyerror(SyntaxVisitor&, const char*);
 static char* ourformat(char*, char*);
+static char* texify(char*);
 
 %}
 
@@ -42,7 +43,7 @@ static char* ourformat(char*, char*);
 
 /* Tokens */
 /* variable */
-%token LETTER TYPESETTING ACCENT
+%token LETTER TYPESETTING ACCENT GREEK
 /* end */
 %token END
 /* endfile */
@@ -52,6 +53,7 @@ static char* ourformat(char*, char*);
 
 %%
 
+/* TODO: memory managament! */
 /* Grammar Rules and Actions */
 expr 			: openexpr end {
 					std::cout << $<phrase>1 << "\n";
@@ -66,12 +68,18 @@ variable 		: variable ACCENT {
 				| typed_variable {
 					$<phrase>$ = $<phrase>1;
 				};
-typed_variable	: LETTER {
-					$<phrase>$ = new char($<letter>1);
+typed_variable	: letter {
+					$<phrase>$ = $<phrase>1;
 				}
 				| TYPESETTING typed_variable {
 					$<phrase>$ = ourformat($<phrase>1, $<phrase>2);
 				};
+letter 			: LETTER {
+					$<phrase>$ = new char($<letter>1);
+				}
+				| GREEK {
+					$<phrase>$ = texify($<phrase>1);
+				}
 %% 
 
 static void yyerror(SyntaxVisitor& vis, const char* s) {
@@ -79,7 +87,6 @@ static void yyerror(SyntaxVisitor& vis, const char* s) {
 }
 
 //TODO: tmp until we have actual token processing :)
-//Also, very unsafe function
 static char* ourformat(char* a, char* b) {
 	size_t lena = strlen(a);
 	size_t lenb = strlen(b);
@@ -92,6 +99,17 @@ static char* ourformat(char* a, char* b) {
 	strcat(c, "}");
 
 	return c;
+}
+
+//TODO: tmp until we have actual token processing :)
+static char* texify(char* a) {
+	size_t lena = strlen(a);
+	char* b = (char*)malloc(lena + 2);
+
+	strcpy(b, "\\");
+	strcat(b, a);
+
+	return b;
 }
 
 int yywrap() {
