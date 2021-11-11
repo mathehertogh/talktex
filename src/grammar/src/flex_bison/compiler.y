@@ -18,9 +18,12 @@ int yywrap(void);
 #endif
 
 static void yyerror(SyntaxVisitor&, const char*);
+// TODO: temporary functions that help us print now, but must be replaced by visitor-functions
 static char* ourformat(const char*, const char*);
 static char* ourformat(const char*, const char*, const char*);
 static char* texify(const char*);
+static char* parenthesis(const char*);
+static char* concat(const char*, const char*, const char*);
 
 %}
 
@@ -48,6 +51,8 @@ static char* texify(const char*);
 %token LETTER TYPESETTING ACCENT GREEK DIGIT SYMBOL
 /* keywords */
 %token OF FROM TO FUNCTION FRACTION OVER MAPS MAPPING OPEN CLOSE PARENTHESIS END
+/* operators */
+%token UNOP MINUS
 /* endfile */
 %token ENDFILE 0
 
@@ -70,6 +75,12 @@ openexpr 		: symbol {
 				}
 				| frac {
 					$<phrase>$ = $<phrase>1;
+				}
+				| unop OF expr {
+					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
+				}
+				| unop expr {
+					$<phrase>$ = concat($<phrase>1, " ", $<phrase>2);
 				};
 symbol 			: DIGIT {
 					$<phrase>$ = new char($<digit>1);
@@ -101,6 +112,14 @@ letter 			: LETTER {
 frac 			: FRACTION expr OVER expr {
 					$<phrase>$ = ourformat("frac", $<phrase>2, $<phrase>4);
 				};
+unop 			: UNOP { 
+					$<phrase>$ = texify($<phrase>1);
+				}
+				| MINUS {
+					$<phrase>$ = new char('-');
+				};
+
+
 %% 
 
 static void yyerror(SyntaxVisitor& vis, const char* s) {
@@ -150,6 +169,33 @@ static char* texify(const char* a) {
 	strcat(b, a);
 
 	return b;
+}
+
+//TODO: tmp until we have actual token processing :)
+static char* parenthesis(const char* a) {
+	size_t lena = strlen(a);
+	char* b = (char*)malloc(lena+16);
+
+	strcpy(b, "\\left( ");
+	strcat(b, a);
+	strcat(b, " \\right)");
+
+	return b;
+}
+
+//TODO: tmp until we have actual token processing :)
+static char* concat(const char* a, const char* delim, const char* b) {
+	size_t lena = strlen(a);
+	size_t lenb = strlen(b);
+	size_t delimlen = strlen(delim);
+
+	char* c = (char*)malloc(lena+lenb+delimlen+1);
+
+	strcpy(c, a);
+	strcat(c, delim);
+	strcat(c, b);
+
+	return c;	
 }
 
 int yywrap() {
