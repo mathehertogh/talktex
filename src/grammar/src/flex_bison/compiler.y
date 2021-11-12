@@ -40,7 +40,6 @@ static char* scope(const char*);
 %union {
 	char letter;
 	char* phrase;
-	char digit;
 }
 
 /* TODO?: Start symbol */
@@ -58,17 +57,11 @@ static char* scope(const char*);
 /* endfile */
 %token ENDFILE 0
 
-
-/*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
-%right BINOP UNOP
-
 /* fixing shift/reduce conflict */
 %right NOEND END
 
-
-
-/*%precedence TO OVER 
-%right BINOP*/
+/*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
+%right OVER TO BINOP UNOP
 
 %parse-param {SyntaxVisitor& vis}
 
@@ -92,20 +85,20 @@ openexpr 		: func {
 				| frac {
 					$<phrase>$ = $<phrase>1;
 				}
-				| expr binop expr {
-					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>1));
+				| expr binop expr %prec BINOP {
+					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>3));
 				}
 				| symbol {
 					$<phrase>$ = $<phrase>1;
 				} 
-				| unop OF expr {
+				| unop OF expr %prec UNOP {
 					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
 				}
-				| unop expr {
+				| unop expr %prec UNOP {
 					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
 				};
 symbol 			: DIGIT {
-					$<phrase>$ = char_to_string($<digit>1);
+					$<phrase>$ = $<phrase>1;
 				}
 				| variable { 
 					$<phrase>$ = $<phrase>1;

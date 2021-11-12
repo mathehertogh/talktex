@@ -4,9 +4,11 @@
 #include <syntaxvisitor.h>
 
 const char* tests[] = 	{"b", "caligraphic b", "b tilde", "bold b hat", "capital a", "bold capital a hat", 
-						"alpha", "alpha tilde", "4", "empty set", "infinity", "fraction alpha over beta", 
+						"alpha", "alpha tilde", "four", "empty set", "infinity", "fraction alpha over beta", 
 						"sin of capital d", "for all alpha tilde", "minus x", "function capital f from capital a to capital b", 
-						"function capital f from capital a to capital b maps alpha to beta", "a plus b", "not a", "not not a"};
+						"function capital f from capital a to capital b maps alpha to beta", "a plus b", "not a", "not not a", 
+						"function f from capital a to capital b maps for all x to sin of fraction x over alpha", 
+						"fraction b over c plus d", "fraction b over c end plus d"};
 
 int main() {
 	Logger logger(std::cerr, std::cerr, std::cerr);

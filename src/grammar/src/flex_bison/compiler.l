@@ -31,7 +31,7 @@ int yylex(void);
 %}
 
 letter 			[a-z]
-digit  			[0-9]
+digit  			"one"|"two"|"three"|"four"|"five"|"six"|"seven"|"eight"|"nine"
 capital  		"capital "[a-z]
 whitespace 		[ \t]+
 typesetting 	"bold"|"caligraphic"|"fraktur"
@@ -60,7 +60,7 @@ binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"le
 {typesetting} 	{ yylval.phrase = strdup(yytext); return TYPESETTING; }
 {accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }
 {letter} 		{ yylval.letter = yytext[0]; return LETTER; }
-{digit}			{ yylval.digit = yytext[0]; return DIGIT; }
+{digit}			{ yylval.phrase = strdup(yytext); return DIGIT; }
 {capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER; }
 {greek}			{ yylval.phrase = strdup(yytext); return GREEK; }
 {symbol}   		{ yylval.phrase = strdup(yytext); return SYMBOL; }
