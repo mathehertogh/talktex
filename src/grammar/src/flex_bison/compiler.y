@@ -61,6 +61,8 @@ static char* scope(const char*);
 /* fixing shift/reduce conflict */
 %right NOEND END
 
+%right TO OVER BINOP NOT
+
 %parse-param {SyntaxVisitor& vis}
 
 %%
@@ -82,6 +84,9 @@ openexpr 		: smallopenexpr {
 				}
 				| func {
 					$<phrase>$ = $<phrase>1;
+				} 
+				| frac {
+					$<phrase>$ = $<phrase>1;
 				}
 				| expr binop smallexpr {
 					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>1));
@@ -100,9 +105,6 @@ smallopenexpr   : symbol {
 				}
 				| unop smallexpr {
 					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
-				}
-				| frac {
-					$<phrase>$ = $<phrase>1;
 				};
 symbol 			: DIGIT {
 					$<phrase>$ = char_to_string($<digit>1);
