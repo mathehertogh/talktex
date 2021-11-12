@@ -77,23 +77,32 @@ expr 			: openexpr %prec NOEND {
 				| openexpr END {
 					$<phrase>$ = $<phrase>1;
 				};
-openexpr 		: symbol { 
-					$<phrase>$ = $<phrase>1;
-				}
-				| frac {
+openexpr 		: smallopenexpr { 
 					$<phrase>$ = $<phrase>1;
 				}
 				| func {
 					$<phrase>$ = $<phrase>1;
 				}
-				| unop OF expr {
+				| expr binop smallexpr {
+					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>1));
+				};
+smallexpr 		: smallopenexpr %prec NOEND {
+					$<phrase>$ = $<phrase>1;
+				}
+				| smallopenexpr END {
+					$<phrase>$ = $<phrase>1;
+				};
+smallopenexpr   : symbol {
+					$<phrase>$ = $<phrase>1;
+				} 
+				| unop OF smallexpr {
 					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
 				}
-				| unop expr {
+				| unop smallexpr {
 					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
-				} 
-				| expr binop expr {
-					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>1));
+				}
+				| frac {
+					$<phrase>$ = $<phrase>1;
 				};
 symbol 			: DIGIT {
 					$<phrase>$ = char_to_string($<digit>1);
