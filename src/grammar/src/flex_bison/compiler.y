@@ -58,10 +58,17 @@ static char* scope(const char*);
 /* endfile */
 %token ENDFILE 0
 
+
+/*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
+%right BINOP UNOP
+
 /* fixing shift/reduce conflict */
 %right NOEND END
 
-%right TO OVER BINOP
+
+
+/*%precedence TO OVER 
+%right BINOP*/
 
 %parse-param {SyntaxVisitor& vis}
 
@@ -79,31 +86,22 @@ expr 			: openexpr %prec NOEND {
 				| openexpr END {
 					$<phrase>$ = $<phrase>1;
 				};
-openexpr 		: smallopenexpr { 
-					$<phrase>$ = $<phrase>1;
-				}
-				| func {
+openexpr 		: func {
 					$<phrase>$ = $<phrase>1;
 				} 
 				| frac {
 					$<phrase>$ = $<phrase>1;
 				}
-				| expr binop smallexpr {
+				| expr binop expr {
 					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>1));
-				};
-smallexpr 		: smallopenexpr %prec NOEND {
-					$<phrase>$ = $<phrase>1;
 				}
-				| smallopenexpr END {
-					$<phrase>$ = $<phrase>1;
-				};
-smallopenexpr   : symbol {
+				| symbol {
 					$<phrase>$ = $<phrase>1;
 				} 
-				| unop OF smallexpr {
+				| unop OF expr {
 					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
 				}
-				| unop smallexpr {
+				| unop expr {
 					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
 				};
 symbol 			: DIGIT {
