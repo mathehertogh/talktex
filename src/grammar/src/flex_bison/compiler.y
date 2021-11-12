@@ -54,14 +54,14 @@ static char* scope(const char*);
 /* keywords */
 %token OF FROM TO FUNCTION FRACTION OVER MAPS MAPPING OPEN CLOSE PARENTHESIS END
 /* operators */
-%token UNOP MINUS BINOP NOT
+%token UNOP MINUS BINOP
 /* endfile */
 %token ENDFILE 0
 
 /* fixing shift/reduce conflict */
 %right NOEND END
 
-%right TO OVER BINOP NOT
+%right TO OVER BINOP
 
 %parse-param {SyntaxVisitor& vis}
 
@@ -156,10 +156,7 @@ unop 			: UNOP {
 				};
 binop 			: BINOP {
 					$<phrase>$ = texify($<phrase>1);
-				}
-				| NOT binop {
-					$<phrase>$ = concat("\not", " ", $<phrase>2);
-				}
+				};
 
 
 %% 
