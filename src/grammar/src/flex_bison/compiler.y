@@ -97,6 +97,9 @@ expr 			: func {
 				| RANGEOP range anyexpr {
 					$<phrase>$ = concat($<phrase>1, $<phrase>2, concat("(", $<phrase>3, ")"));
 				}
+				| OPEN PARENTHESIS openexpr CLOSE PARENTHESIS {
+					$<phrase>$ = concat("\\left( ", $<phrase>3, " \\right)");
+				}
 				| simpleexpr {
 					$<phrase>$ = $<phrase>1;
 				}

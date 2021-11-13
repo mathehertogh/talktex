@@ -9,7 +9,7 @@ const char* tests[] = 	{"b", "caligraphic b", "b tilde", "bold b hat", "capital 
 						"function capital f from capital a to capital b maps alpha to beta", "a plus b", "sin of cos of a", 
 						"function f from capital a to capital b maps for all x to sin of fraction x over alpha", 
 						"fraction b over c plus d", "fraction b over c end plus d", "a not equal b", 
-						"sum from x equal zero to infinity x power two"};
+						"sum from x equal zero to infinity x power two", "open parenthesis x plus two close parenthesis"};
 
 int main() {
 	Logger logger(std::cerr, std::cerr, std::cerr);
