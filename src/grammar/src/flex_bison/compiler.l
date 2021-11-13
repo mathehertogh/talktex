@@ -38,7 +38,7 @@ typesetting 	"bold"|"caligraphic"|"fraktur"
 accent 			"tilde"|"hat"|"bar"
 greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
 symbol 			"empty set"|"infinity"
-unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"|"not"
+unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"
 binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"less"|"greater"|"less equal"|"greater equal"|"and"|"or"|"implies"|"equivalent"|"union"|"intersection"|"set minus"|"subset"|"in"
 
 /* Patterns */
@@ -56,6 +56,7 @@ binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"le
 "parenthesis"	{ return PARENTHESIS; }
 "end" 			{ return END; }
 "minus"			{ return MINUS; }
+"not" 			{ return NOT; }
 
 {typesetting} 	{ yylval.phrase = strdup(yytext); return TYPESETTING; }
 {accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }

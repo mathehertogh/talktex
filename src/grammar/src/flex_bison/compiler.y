@@ -53,7 +53,7 @@ static char* scope(const char*);
 /* keywords */
 %token OF FROM TO FUNCTION FRACTION OVER MAPS MAPPING OPEN CLOSE PARENTHESIS END
 /* operators */
-%token UNOP MINUS BINOP
+%token UNOP MINUS BINOP NOT
 /* endfile */
 %token ENDFILE 0
 
@@ -61,7 +61,7 @@ static char* scope(const char*);
 %right END NOEND 
 
 /*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
-%right OF BINOP
+%right OF NOT BINOP
 
 %parse-param {SyntaxVisitor& vis}
 
@@ -153,6 +153,9 @@ unop 			: UNOP {
 				};
 binop 			: BINOP {
 					$<phrase>$ = texify($<phrase>1);
+				}
+				| NOT BINOP {
+					$<phrase>$ = concat(texify("not"), "", texify($<phrase>2));
 				};
 
 
