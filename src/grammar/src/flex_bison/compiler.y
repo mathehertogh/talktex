@@ -58,10 +58,10 @@ static char* scope(const char*);
 %token ENDFILE 0
 
 /* fixing shift/reduce conflict */
-%right NOEND END
+%right END NOEND 
 
 /*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
-%right OVER TO BINOP UNOP
+%right OF BINOP
 
 %parse-param {SyntaxVisitor& vis}
 
@@ -70,33 +70,42 @@ static char* scope(const char*);
 /* TODO: memory managament! */
 /* TODO: build actual SyntaxTree */
 /* Grammar Rules and Actions */
-start 			: expr {
+start 			: anyexpr {
 					std::cout << $<phrase>1 << "\n";
 				};
-expr 			: openexpr %prec NOEND {
+anyexpr 		: openexpr %prec NOEND {
 					$<phrase>$ = $<phrase>1;
 				}
-				| openexpr END {
+				| closedexpr %prec END {
 					$<phrase>$ = $<phrase>1;
-				};
-openexpr 		: func {
+				}
+openexpr		: expr %prec NOEND {
+					$<phrase>$ = $<phrase>1;
+				}
+closedexpr 		: expr END {
+					$<phrase>$ = $<phrase>1;
+				}
+expr 			: func {
 					$<phrase>$ = $<phrase>1;
 				} 
-				| frac {
+				| FRACTION openexpr OVER anyexpr {
+					$<phrase>$ = ourformat("frac", $<phrase>2, $<phrase>4);
+				}
+				| openexpr binop anyexpr %prec BINOP {
+					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>3));
+				}
+				| simpleexpr {
 					$<phrase>$ = $<phrase>1;
 				}
-				| expr binop expr %prec BINOP {
-					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>3));
+simpleexpr		: unop OF openexpr {
+					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
+				}
+				| unop simpleexpr {
+					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
 				}
 				| symbol {
 					$<phrase>$ = $<phrase>1;
-				} 
-				| unop OF expr %prec UNOP {
-					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
 				}
-				| unop expr %prec UNOP {
-					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
-				};
 symbol 			: DIGIT {
 					$<phrase>$ = $<phrase>1;
 				}
@@ -124,9 +133,6 @@ letter 			: LETTER {
 				| GREEK {
 					$<phrase>$ = texify($<phrase>1);
 				};
-frac 			: FRACTION expr OVER expr {
-					$<phrase>$ = ourformat("frac", $<phrase>2, $<phrase>4);
-				};
 func 			: openfunc mapsto {
 					$<phrase>$ = concat($<phrase>1, ", ", $<phrase>2);
 				}
@@ -136,7 +142,7 @@ func 			: openfunc mapsto {
 openfunc 		: FUNCTION variable FROM symbol TO symbol {
 					$<phrase>$ = concat($<phrase>2, ": ", concat($<phrase>4, " \\to ", $<phrase>6));
 				};
-mapsto 			: MAPS expr TO expr {
+mapsto 			: MAPS openexpr TO anyexpr {
 					$<phrase>$ = concat($<phrase>2, " \\mapsto ", $<phrase>4);
 				};
 unop 			: UNOP { 
