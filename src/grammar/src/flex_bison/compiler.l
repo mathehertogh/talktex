@@ -31,7 +31,7 @@ int yylex(void);
 %}
 
 letter 			[a-z]
-digit  			"one"|"two"|"three"|"four"|"five"|"six"|"seven"|"eight"|"nine"
+digit  			"zero"|"one"|"two"|"three"|"four"|"five"|"six"|"seven"|"eight"|"nine"
 capital  		"capital "[a-z]
 whitespace 		[ \t]+
 typesetting 	"bold"|"caligraphic"|"fraktur"
@@ -40,6 +40,7 @@ greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"
 symbol 			"empty set"|"infinity"
 unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"
 binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"less"|"greater"|"less equal"|"greater equal"|"and"|"or"|"implies"|"equivalent"|"union"|"intersection"|"set minus"|"subset"|"in"
+rangeop  		"sum"|"product"|"integral"
 
 /* Patterns */
 %%
@@ -50,7 +51,7 @@ binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"le
 "fraction"		{ return FRACTION; }
 "over"			{ return OVER; }
 "maps"			{ return MAPS; }
-"mapping"		{ return MAPPING; }
+"mapping"		{ return MAPS; }
 "open"   		{ return OPEN; }
 "close"			{ return CLOSE; }
 "parenthesis"	{ return PARENTHESIS; }
@@ -67,6 +68,7 @@ binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"le
 {symbol}   		{ yylval.phrase = strdup(yytext); return SYMBOL; }
 {unop}			{ yylval.phrase = strdup(yytext); return UNOP; }
 {binop} 		{ yylval.phrase = strdup(yytext); return BINOP; }
+{rangeop}		{ yylval.phrase = strdup(yytext); return RANGEOP; }
 
 
 {whitespace}    {/* skip whitespace */}

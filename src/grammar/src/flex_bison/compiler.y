@@ -51,9 +51,9 @@ static char* scope(const char*);
 /* symbol */
 %token LETTER TYPESETTING ACCENT GREEK DIGIT SYMBOL
 /* keywords */
-%token OF FROM TO FUNCTION FRACTION OVER MAPS MAPPING OPEN CLOSE PARENTHESIS END
+%token OF FROM TO FUNCTION FRACTION OVER MAPS OPEN CLOSE PARENTHESIS END
 /* operators */
-%token UNOP MINUS BINOP NOT
+%token UNOP MINUS BINOP NOT RANGEOP
 /* endfile */
 %token ENDFILE 0
 
@@ -93,6 +93,9 @@ expr 			: func {
 				}
 				| openexpr binop anyexpr %prec BINOP {
 					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>3));
+				}
+				| RANGEOP range anyexpr {
+					$<phrase>$ = concat($<phrase>1, $<phrase>2, concat("(", $<phrase>3, ")"));
 				}
 				| simpleexpr {
 					$<phrase>$ = $<phrase>1;
@@ -157,6 +160,9 @@ binop 			: BINOP {
 				| NOT BINOP {
 					$<phrase>$ = concat(texify("not"), "", texify($<phrase>2));
 				};
+range 			: FROM openexpr TO anyexpr {
+					$<phrase>$ = concat("_{", $<phrase>2, concat("}^{", $<phrase>4, "}"));
+				}
 
 
 %% 
