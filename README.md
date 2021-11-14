@@ -13,7 +13,7 @@ The project is currently under (heavy) development and is not yet functional.
 While under heavy development, we have a few installation instructions ready:
 
 ## Linux
-1. Install fles and bison using
+1. Install flex and bison using
 ```bash
 sudo apt-get install flex bison
 ```
