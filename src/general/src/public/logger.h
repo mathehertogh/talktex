@@ -1,5 +1,5 @@
 /*
-This logger file was created in the Compiler Construction project 
+This logger file was created in the Compiler Construction project
 by Sebastiaan Alvarez Rodriguez and Mariska IJpelaar
 */
 
@@ -9,6 +9,8 @@ by Sebastiaan Alvarez Rodriguez and Mariska IJpelaar
 #include <ostream>
 #include <streambuf>
 #include <string>
+
+#include "aecpp.h"
 
 // Logger class to print errors, warnings and informational messages.
 // It also keeps the number of messages printed in each category.
@@ -20,29 +22,6 @@ class Logger {
     uint64_t infos, warnings, errors;
 
     public:
-    // A type of a color to print messages in color.
-    struct Color {
-        const char* code;
-    };
-
-    // Red print color
-    const static Color RED;
-
-    // Yellow print color
-    const static Color YELLOW;
-
-    // Blue print color
-    const static Color BLUE;
-
-    // White print color
-    const static Color WHITE;
-
-    // Reset the current color
-    const static Color RESET;
-
-    // Bold print 'color'
-    const static Color BOLD;
-
     // Logger constructor, where info messages are printed to `info_stream`, warnings to `warning_stream`,
     // and errors to `error_stream`.
     Logger(std::ostream& info_stream, std::ostream& warning_stream, std::ostream& error_stream);
@@ -67,7 +46,7 @@ class Logger {
 
     private:
     // Print a generic tag to `stream`, in `color` with message `tag` at `line`. If `line` is negative, it is omitted.
-    static void print_tag(std::ostream& stream, Color color, const std::string& tag, int line);
+    static void print_tag(std::ostream& stream, aec::Color, const std::string& tag, int line);
 };
 
 // A helper class for a streambuf that discards any messages written to it
@@ -89,10 +68,5 @@ class NullStream : public std::ostream {
 
 // Global NullStream, for ease of use.
 extern NullStream NULL_STREAM;
-
-// Operator overload to write a color to a stream, which sets the color of output message.
-inline std::ostream& operator<<(std::ostream& os, const Logger::Color& color) {
-    return os << "\033[" << color.code << "m";
-}
 
 #endif
