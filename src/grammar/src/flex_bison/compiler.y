@@ -1,9 +1,11 @@
 /* C declarations */
 %{
+
 #include <iostream>
 #include <cstring>
 
-#include <syntaxvisitor.h>
+#include "syntax_tree.h"
+#include "syntax_visitor.h"
 
 /* Import from comp.l*/
 #ifdef __cplusplus
@@ -17,21 +19,38 @@ int yywrap(void);
 }
 #endif
 
-static void yyerror(SyntaxVisitor&, const char*);
+// Shorthand for the grammar actions
+using Con = Construction;
+
+// Moves in [subtree] under [tree] and deletes [subtree].
+static void move_in_subtree(Syntax_tree& tree, Syntax_tree* subtree) {
+	tree.append_subtree(std::move(*subtree));
+	delete subtree;
+}
+
+// Converts [c_string] to an std::string and deletes [c_string]
+std::string move_to_string(char* c_string) {
+	auto ret = std::string(c_string);
+	free(c_string);
+	return ret;
+}
+
 // TODO: temporary functions that help us print now, but must be replaced by visitor-functions
-static char* ourformat(const char*, const char*);
-static char* ourformat(const char*, const char*, const char*);
-static char* texify(const char*);
-static char* parenthesis(const char*);
-static char* concat(const char*, const char*, const char*);
-static char* char_to_string(char);
-static char* scope(const char*);
+// static char* ourformat(const char*, const char*);
+// static char* ourformat(const char*, const char*, const char*);
+// static char* texify(const char*);
+// static char* parenthesis(const char*);
+// static char* concat(const char*, const char*, const char*);
+// static char* char_to_string(char);
+// static char* scope(const char*);
+
+static void yyerror(Syntax_visitor&, const char*);
 
 %}
 
-%code requires {
-	class SyntaxVisitor;
-}
+// %code requires {
+// 	class Syntax_tree;
+// }
 
 /* Provides more useful error messages */
 %define parse.error verbose
@@ -40,10 +59,11 @@ static char* scope(const char*);
 %union {
 	char letter;
 	char* phrase;
+	Syntax_tree* tree;
 }
 
 /* TODO?: Start symbol */
-/* Note: if no start symbol is provided, 
+/* Note: if no start symbol is provided,
  	bison takes the first rule as start */
 /* %start program */
 
@@ -58,122 +78,171 @@ static char* scope(const char*);
 %token ENDFILE 0
 
 /* fixing shift/reduce conflict */
-%right END NOEND 
+%right END NOEND
 
 /*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
 %right OF NOT BINOP
 
-%parse-param {SyntaxVisitor& vis}
+%parse-param {Syntax_visitor& syntax_visitor}
 
 %%
 
-/* TODO: memory managament! */
+/* TODO: memory managament! Note: bison has a variant option, can't get it to work though. */
 /* TODO: build actual SyntaxTree */
 /* Grammar Rules and Actions */
 start 			: anyexpr {
-					std::cout << $<phrase>1 << "\n";
+					syntax_visitor.syntax_tree = std::move(*$<tree>1);
+					delete $<tree>1;
 				};
 anyexpr 		: openexpr %prec NOEND {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = $<tree>1;
 				}
 				| closedexpr %prec END {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = $<tree>1;
 				}
 openexpr		: expr %prec NOEND {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = $<tree>1;
 				}
 closedexpr 		: expr END {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = $<tree>1;
 				}
 expr 			: func {
-					$<phrase>$ = $<phrase>1;
-				} 
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_func);
+					move_in_subtree(*$<tree>$, $<tree>1);
+				}
 				| FRACTION openexpr OVER anyexpr {
-					$<phrase>$ = ourformat("frac", $<phrase>2, $<phrase>4);
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_frac);
+					move_in_subtree(*$<tree>$, $<tree>2);
+					move_in_subtree(*$<tree>$, $<tree>4);
 				}
 				| openexpr binop anyexpr %prec BINOP {
-					$<phrase>$ = concat(scope($<phrase>1), $<phrase>2, scope($<phrase>3));
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_binop);
+					move_in_subtree(*$<tree>$, $<tree>1);
+					move_in_subtree(*$<tree>$, $<tree>2);
+					move_in_subtree(*$<tree>$, $<tree>3);
 				}
 				| RANGEOP range anyexpr {
-					$<phrase>$ = concat($<phrase>1, $<phrase>2, concat("(", $<phrase>3, ")"));
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_binop);
+					// Should be <rangeop_type> instead of <phrase> if the lexer provides it
+					$<tree>$->append_subtree(Syntax_tree(
+						Con::Type::Rangeop, move_to_string($<phrase>1)
+					));
+					move_in_subtree(*$<tree>$, $<tree>2);
+					move_in_subtree(*$<tree>$, $<tree>3);
 				}
 				| OPEN PARENTHESIS openexpr CLOSE PARENTHESIS {
-					$<phrase>$ = concat("\\left( ", $<phrase>3, " \\right)");
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_parentheses);
+					move_in_subtree(*$<tree>$, $<tree>3);
 				}
 				| simpleexpr {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = $<tree>1;
 				}
 simpleexpr		: unop OF openexpr {
-					$<phrase>$ = concat($<phrase>1, "", parenthesis($<phrase>3));
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_of);
+					move_in_subtree(*$<tree>$, $<tree>1);
+					move_in_subtree(*$<tree>$, $<tree>3);
 				}
 				| unop simpleexpr {
-					$<phrase>$ = concat($<phrase>1, "", $<phrase>2);
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_unop);
+					move_in_subtree(*$<tree>$, $<tree>1);
+					move_in_subtree(*$<tree>$, $<tree>2);
 				}
 				| symbol {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = new Syntax_tree(Con::Type::Expr_symbol);
+					move_in_subtree(*$<tree>$, $<tree>1);
 				}
 symbol 			: DIGIT {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = new Syntax_tree(Con::Type::Symbol_digit);
+					$<tree>$->append_subtree(Syntax_tree(
+						Con::Type::Digit, move_to_string($<phrase>1)
+					));
 				}
-				| variable { 
-					$<phrase>$ = $<phrase>1;
+				| variable {
+					$<tree>$ = new Syntax_tree(Con::Type::Symbol_variable);
+					move_in_subtree(*$<tree>$, $<tree>1);
 				}
 				| SYMBOL {
-					$<phrase>$ = texify($<phrase>1);
+					// Should be <special_symbol_type> instead of <phrase> if the lexer provides it
+					$<tree>$ = new Syntax_tree(
+						Con::Type::Symbol_special, move_to_string($<phrase>1)
+					);
 				};
 variable 		: variable ACCENT {
-					$<phrase>$ = ourformat($<phrase>2, $<phrase>1);
-				} 
+					$<tree>$ = new Syntax_tree(Con(Con::Type::Variable_accent));
+					move_in_subtree(*$<tree>$, $<tree>1);
+					// Should be <accent_type> instead of <phrase> if the lexer provides it
+					$<tree>$->append_subtree(Syntax_tree(
+						Con::Type::Accent, move_to_string($<phrase>2)
+					));
+				}
 				| typed_variable {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = $<tree>1;
 				};
 typed_variable	: letter {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = $<tree>1;
 				}
 				| TYPESETTING typed_variable {
-					$<phrase>$ = ourformat($<phrase>1, $<phrase>2);
+					$<tree>$ = new Syntax_tree(Con::Type::Variable_typesetting);
+					// Should be <typesetting_type> instead of <phrase> if the lexer provides it
+					$<tree>$->append_subtree(Syntax_tree(
+						Con::Type::Accent, move_to_string($<phrase>1)
+					));
+					move_in_subtree(*$<tree>$, $<tree>2);
 				};
 letter 			: LETTER {
-					$<phrase>$ = char_to_string($<letter>1);
+					$<tree>$ = new Syntax_tree(Con(Con::Type::Letter, $<letter>1));
 				}
 				| GREEK {
-					$<phrase>$ = texify($<phrase>1);
+					$<tree>$ = new Syntax_tree(Con::Type::Greek_symbol, move_to_string($<phrase>1));
 				};
 func 			: openfunc mapsto {
-					$<phrase>$ = concat($<phrase>1, ", ", $<phrase>2);
+					$<tree>$ = new Syntax_tree(Con::Type::Func_mapsto);
+					move_in_subtree(*$<tree>$, $<tree>1);
+					move_in_subtree(*$<tree>$, $<tree>2);
 				}
 				| openfunc {
-					$<phrase>$ = $<phrase>1;
+					$<tree>$ = new Syntax_tree(Con::Type::Func);
+					move_in_subtree(*$<tree>$, $<tree>1);
 				};
 openfunc 		: FUNCTION variable FROM symbol TO symbol {
-					$<phrase>$ = concat($<phrase>2, ": ", concat($<phrase>4, " \\to ", $<phrase>6));
+					$<tree>$ = new Syntax_tree(Con::Type::Openfunc);
+					move_in_subtree(*$<tree>$, $<tree>2);
+					move_in_subtree(*$<tree>$, $<tree>4);
+					move_in_subtree(*$<tree>$, $<tree>6);
 				};
 mapsto 			: MAPS openexpr TO anyexpr {
-					$<phrase>$ = concat($<phrase>2, " \\mapsto ", $<phrase>4);
+					$<tree>$ = new Syntax_tree(Con::Type::Mapsto);
+					move_in_subtree(*$<tree>$, $<tree>2);
+					move_in_subtree(*$<tree>$, $<tree>4);
 				};
-unop 			: UNOP { 
-					$<phrase>$ = concat(texify($<phrase>1), "", " ");
+unop 			: UNOP {
+					// Should be <unop_type> instead of <phrase> if the lexer provides it
+					$<tree>$ = new Syntax_tree(Con::Type::Unop, move_to_string($<phrase>1));
 				}
 				| MINUS {
-					$<phrase>$ = char_to_string('-');
+					// Should be Unop_type::Negate instead of '-' if we start using those
+					$<tree>$ = new Syntax_tree(Con::Type::Unop, '-');
 				};
 binop 			: BINOP {
-					$<phrase>$ = texify($<phrase>1);
+					// Should be <binop_type> instead of <phrase> if the lexer provides it
+					$<tree>$ = new Syntax_tree(Con::Type::Binop, move_to_string($<phrase>1));
 				}
 				| NOT BINOP {
-					$<phrase>$ = concat(texify("not"), "", texify($<phrase>2));
+					$<tree>$ = new Syntax_tree(Con::Type::Binop_negated);
+					// Should be <binop_type> instead of <phrase> if the lexer provides it
+					$<tree>$->append_subtree(Syntax_tree(
+						Con::Type::Binop, move_to_string($<phrase>2)
+					));
 				};
 range 			: FROM openexpr TO anyexpr {
-					$<phrase>$ = concat("_{", $<phrase>2, concat("}^{", $<phrase>4, "}"));
+					$<tree>$ = new Syntax_tree(Con(Con::Type::Range));
+					move_in_subtree(*$<tree>$, $<tree>2);
+					move_in_subtree(*$<tree>$, $<tree>4);
 				}
 
+%%
 
-%% 
-
-static void yyerror(SyntaxVisitor& vis, const char* s) {
-    (&vis)->logger.error(-1) << s << '\n';
-}
-
+/*
 //TODO: tmp until we have actual token processing :)
 static char* ourformat(const char* a, const char* b) {
 	size_t lena = strlen(a);
@@ -243,7 +312,7 @@ static char* concat(const char* a, const char* delim, const char* b) {
 	strcat(c, delim);
 	strcat(c, b);
 
-	return c;	
+	return c;
 }
 
 //TODO: tmp until we have actual token processing :)
@@ -264,6 +333,11 @@ static char* scope(const char* a) {
 	strcat(b, "}");
 
 	return b;
+}
+*/
+
+static void yyerror(Syntax_visitor& vis, const char* s) {
+    (&vis)->logger.error(-1) << s << '\n';
 }
 
 int yywrap() {

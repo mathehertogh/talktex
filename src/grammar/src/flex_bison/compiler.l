@@ -13,6 +13,7 @@ char tokenString[MAXTOKENLEN+1];
 /* C declarations */
 %{
 #include <iostream>
+#include "syntax_visitor.h"
 #include "bison.compiler.h"
 
 /* extern C declarations */
@@ -59,16 +60,16 @@ rangeop  		"sum"|"product"|"integral"
 "minus"			{ return MINUS; }
 "not" 			{ return NOT; }
 
-{typesetting} 	{ yylval.phrase = strdup(yytext); return TYPESETTING; }
-{accent} 		{ yylval.phrase = strdup(yytext); return ACCENT; }
-{letter} 		{ yylval.letter = yytext[0]; return LETTER; }
-{digit}			{ yylval.phrase = strdup(yytext); return DIGIT; }
-{capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER; }
-{greek}			{ yylval.phrase = strdup(yytext); return GREEK; }
-{symbol}   		{ yylval.phrase = strdup(yytext); return SYMBOL; }
-{unop}			{ yylval.phrase = strdup(yytext); return UNOP; }
-{binop} 		{ yylval.phrase = strdup(yytext); return BINOP; }
-{rangeop}		{ yylval.phrase = strdup(yytext); return RANGEOP; }
+{typesetting} 	{ yylval.phrase = strdup(yytext);     return TYPESETTING; }
+{accent} 		{ yylval.phrase = strdup(yytext);     return ACCENT;      }
+{letter} 		{ yylval.letter = yytext[0];          return LETTER;      }
+{digit}			{ yylval.phrase = strdup(yytext);     return DIGIT;       }
+{capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER;      }
+{greek}			{ yylval.phrase = strdup(yytext);     return GREEK;       }
+{symbol}   		{ yylval.phrase = strdup(yytext);     return SYMBOL;      }
+{unop}			{ yylval.phrase = strdup(yytext);     return UNOP;        }
+{binop} 		{ yylval.phrase = strdup(yytext);     return BINOP;       }
+{rangeop}		{ yylval.phrase = strdup(yytext);     return RANGEOP;     }
 
 
 {whitespace}    {/* skip whitespace */}

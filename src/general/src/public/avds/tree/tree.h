@@ -87,6 +87,10 @@ public:
 	/** Constructs a tree with the given value at its root */
 	Tree(T&& root_value);
 
+	/** Constructs a tree with a root element that is constructed in-place using [args] */
+	template<typename... Args>
+	Tree(Args&&... args);
+
 	/** Constructs a copy of the tree pointed to by [t] */
 	Tree(const const_traverser& t);
 
@@ -225,6 +229,8 @@ public:
 private:
 
 	struct Node {
+		// TODO: constructors taking T&& value and Args&&...
+
 		Node(const T& value, Node* parent, std::vector<Node> children);
 		Node(const T& value, Node* parent = nullptr);
 		Node(const Node& other);
@@ -429,6 +435,13 @@ Tree<T>::Tree(const T& root_value) {
 template<typename T>
 Tree<T>::Tree(T&& root_value) {
 	root_ptr = make_deep<Node>(root_value);
+}
+
+template<typename T>
+template<typename... Args>
+Tree<T>::Tree(Args&&... args) {
+	// Not quite true emplacement
+	root_ptr = make_deep<Node>(T{args...});
 }
 
 template<typename T>
