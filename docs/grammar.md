@@ -67,11 +67,11 @@ Below we define all constructs of TalkTex.
 | SMALLLETTER[L]         | L                      | 10       |          |
 
 ### TYPESETTING
-| phrase      | target    | priority | synonyms |
-|-------------|-----------|----------|----------|
-| bold        | \mathbb   | 10       |          |
-| caligraphic | \mathcal  | 10       |          |
-| fraktur     | \mathfrak | 10       |          |
+| phrase       | target    | priority | synonyms |
+|--------------|-----------|----------|----------|
+| bold         | \mathbb   | 10       |          |
+| calligraphic | \mathcal  | 10       |          |
+| fraktur      | \mathfrak | 10       |          |
 
 ### ACCENT
 | phrase | target | priority | synonyms |
@@ -93,7 +93,7 @@ Below we define all constructs of TalkTex.
 | empty set   | \emptyset | 10       |          |
 | infinity    | \infty    | 10       |          |
 | DIGIT[D]    | D         | 9        |          |
-| VARIABLE[V] | V         | 6        |          | 
+| VARIABLE[V] | V         | 6        |          |
 
 ### UNOP
 | phrase      | target  | priority | synonyms  |

@@ -35,7 +35,7 @@ letter 			[a-z]
 digit  			"zero"|"one"|"two"|"three"|"four"|"five"|"six"|"seven"|"eight"|"nine"
 capital  		"capital "[a-z]
 whitespace 		[ \t]+
-typesetting 	"bold"|"caligraphic"|"fraktur"
+typesetting 	"bold"|"calligraphic"|"fraktur"
 accent 			"tilde"|"hat"|"bar"
 greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
 symbol 			"empty set"|"infinity"

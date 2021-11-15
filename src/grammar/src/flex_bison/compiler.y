@@ -35,22 +35,9 @@ std::string move_to_string(char* c_string) {
 	return ret;
 }
 
-// TODO: temporary functions that help us print now, but must be replaced by visitor-functions
-// static char* ourformat(const char*, const char*);
-// static char* ourformat(const char*, const char*, const char*);
-// static char* texify(const char*);
-// static char* parenthesis(const char*);
-// static char* concat(const char*, const char*, const char*);
-// static char* char_to_string(char);
-// static char* scope(const char*);
-
 static void yyerror(Syntax_visitor&, const char*);
 
 %}
-
-// %code requires {
-// 	class Syntax_tree;
-// }
 
 /* Provides more useful error messages */
 %define parse.error verbose
@@ -88,7 +75,6 @@ static void yyerror(Syntax_visitor&, const char*);
 %%
 
 /* TODO: memory managament! Note: bison has a variant option, can't get it to work though. */
-/* TODO: build actual SyntaxTree */
 /* Grammar Rules and Actions */
 start 			: anyexpr {
 					syntax_visitor.syntax_tree = std::move(*$<tree>1);
@@ -185,7 +171,7 @@ typed_variable	: letter {
 					$<tree>$ = new Syntax_tree(Con::Type::Variable_typesetting);
 					// Should be <typesetting_type> instead of <phrase> if the lexer provides it
 					$<tree>$->append_subtree(Syntax_tree(
-						Con::Type::Accent, move_to_string($<phrase>1)
+						Con::Type::Typesetting, move_to_string($<phrase>1)
 					));
 					move_in_subtree(*$<tree>$, $<tree>2);
 				};
@@ -220,8 +206,8 @@ unop 			: UNOP {
 					$<tree>$ = new Syntax_tree(Con::Type::Unop, move_to_string($<phrase>1));
 				}
 				| MINUS {
-					// Should be Unop_type::Negate instead of '-' if we start using those
-					$<tree>$ = new Syntax_tree(Con::Type::Unop, '-');
+					// Should be Unop_type::Negate instead of "minus" if we start using those
+					$<tree>$ = new Syntax_tree(Con::Type::Unop, "minus");
 				};
 binop 			: BINOP {
 					// Should be <binop_type> instead of <phrase> if the lexer provides it
@@ -241,100 +227,6 @@ range 			: FROM openexpr TO anyexpr {
 				}
 
 %%
-
-/*
-//TODO: tmp until we have actual token processing :)
-static char* ourformat(const char* a, const char* b) {
-	size_t lena = strlen(a);
-	size_t lenb = strlen(b);
-
-	char* c = (char*)malloc(lena + lenb +4);
-	strcpy(c, "\\");
-	strcat(c, a);
-	strcat(c, "{");
-	strcat(c, b);
-	strcat(c, "}");
-
-	return c;
-}
-
-//TODO: tmp until we have actual token processing :)
-static char* ourformat(const char* a, const char* b, const char* c) {
-	size_t lena = strlen(a);
-	size_t lenb = strlen(b);
-	size_t lenc = strlen(c);
-
-	char* d = (char*)malloc(lena + lenb + lenc +6);
-	strcpy(d, "\\");
-	strcat(d, a);
-	strcat(d, "{");
-	strcat(d, b);
-	strcat(d, "}");
-	strcat(d, "{");
-	strcat(d, c);
-	strcat(d, "}");
-
-	return d;
-}
-
-//TODO: tmp until we have actual token processing :)
-static char* texify(const char* a) {
-	size_t lena = strlen(a);
-	char* b = (char*)malloc(lena + 2);
-
-	strcpy(b, "\\");
-	strcat(b, a);
-
-	return b;
-}
-
-//TODO: tmp until we have actual token processing :)
-static char* parenthesis(const char* a) {
-	size_t lena = strlen(a);
-	char* b = (char*)malloc(lena+16);
-
-	strcpy(b, "\\left( ");
-	strcat(b, a);
-	strcat(b, " \\right)");
-
-	return b;
-}
-
-//TODO: tmp until we have actual token processing :)
-static char* concat(const char* a, const char* delim, const char* b) {
-	size_t lena = strlen(a);
-	size_t lenb = strlen(b);
-	size_t delimlen = strlen(delim);
-
-	char* c = (char*)malloc(lena+lenb+delimlen+1);
-
-	strcpy(c, a);
-	strcat(c, delim);
-	strcat(c, b);
-
-	return c;
-}
-
-//TODO: tmp until we have actual token processing :)
-static char* char_to_string(char c) {
-	char* character = (char*)malloc(2*sizeof(char));
-	character[0] = c;
-	character[1] = '\0';
-	return character;
-}
-
-//TODO: tmp until we have actual token processing :)
-static char* scope(const char* a) {
-	size_t lena = strlen(a);
-	char* b = (char*)malloc(lena+3);
-
-	strcpy(b, "{");
-	strcat(b, a);
-	strcat(b, "}");
-
-	return b;
-}
-*/
 
 static void yyerror(Syntax_visitor& vis, const char* s) {
     (&vis)->logger.error(-1) << s << '\n';
