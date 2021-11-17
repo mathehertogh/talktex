@@ -142,9 +142,9 @@ Below we define all constructs of TalkTex.
 | integral | \int   | 10       |          |
 
 ### RANGE
-| phrase                  | target    | priority | synonyms |
-|-------------------------|-----------|----------|----------|
-| from EXPR[A] to EXPR[B] | \_{A}^{B} | 5        |          |
+| phrase                  			| target    | priority | synonyms |
+|-----------------------------------|-----------|----------|----------|
+| from OPENEXPR[A] to ANYEXPR[B] 	| \_{A}^{B} | 5        |          |
 
 ### FRAC
 | phrase                        | target      | priority | synonyms |
@@ -157,9 +157,9 @@ Below we define all constructs of TalkTex.
 | function VARIABLE[F] from SYMBOL[A] to SYMBOL[B] | F: A \to B | 5          |          |
 
 ### MAPSTO
-| phrase                  | target      | priority | synonyms                   |
-|-------------------------|-------------|----------|----------------------------|
-| maps EXPR[X] to EXPR[Y] | X \mapsto Y | 5        | mapping EXPR[X] to EXPR[Y] |
+| phrase                  		 | target      | priority | synonyms                   |
+|--------------------------------|-------------|----------|----------------------------|
+| maps OPENEXPR[X] to ANYEXPR[Y] | X \mapsto Y | 5        | mapping OPENEXPR[X] to ANYEXPR[Y] |
 
 ### FUNC
 | phrase                | target | priority | synonyms |
@@ -167,20 +167,30 @@ Below we define all constructs of TalkTex.
 | OPENFUNC[F] MAPSTO[M] | F, M   | 4        |          |
 | OPENFUNC[F]           | F      | 3        |          |
 
-### OPENEXPR
-| phrase                                     | target            | priority | synonyms |
-|--------------------------------------------|-------------------|----------|----------|
-| SYMBOL[S]                                  | S                 | 2        |          |
-| FRAC[F]                                    | F                 | 2        |          |
-| FUNC[F]                                    | F                 | 2        |          |
-| UNOP[O] of EXPR[A]                         | O\left( A \right) | 2        |          |
-| UNOP[O] EXPR[A]                            | O A               | 2        |          |
-| EXPR[A] BINOP[O] EXPR[B]                   | {A}O{B}           | 2        |          |
-| RANGEOP[O] RANGE[R] EXPR[A]                | OR(A)             | 2        |          |
-| open parenthesis EXPR[A] close parenthesis | \left( A \right)  | 2        |          |
-
 ### EXPR
-| phrase          | target | priority | synonyms |
-|-----------------|--------|----------|----------|
-| OPENEXPR[A] end | A      | 1        |          |
-| OPENEXPR[A]     | A      | 0        |          |
+| phrase                                     		| target            | priority | synonyms |
+|---------------------------------------------------|-------------------|----------|----------|
+| SYMBOL[S]                                  		| S                 | 2        |          |
+| FRAC[F]                                    		| F                 | 2        |          |
+| FUNC[F]                                    		| F                 | 2        |          |
+| UNOP[O] of OPENEXPR[A]                         	| O\left( A \right) | 2        |          |
+| UNOP[O] SIMPLEEXPR[A]                            	| O A               | 2        |          |
+| OPENEXPR[A] BINOP[O] ANYEXPR[B]              		| {A}O{B}           | 2        |          |
+| RANGEOP[O] RANGE[R] ANYEXPR[A]                	| OR(A)             | 2        |          |
+| open parenthesis OPENEXPR[A] close parenthesis	| \left( A \right)  | 2        |          |
+
+### CLOSEDEXPR
+| phrase          	| target | priority | synonyms |
+|-------------------|--------|----------|----------|
+| EXPR[A] end		| A      | 1        |          |
+
+### OPENEXPR
+| phrase          	| target | priority | synonyms |
+|-------------------|--------|----------|----------|
+| EXPR[A] 			| A      | 0        |          |
+
+### ANYEXPR
+| phrase          	| target | priority | synonyms |
+|-------------------|--------|----------|----------|
+| CLOSEDEXPR[A] 	| A      | 1        |          |
+| OPENEXPR[A]     	| A      | 0        |          |
