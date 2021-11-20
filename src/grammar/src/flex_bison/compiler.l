@@ -36,7 +36,6 @@ digit  			"zero"|"one"|"two"|"three"|"four"|"five"|"six"|"seven"|"eight"|"nine"
 capital  		"capital "[a-z]
 whitespace 		[ \t]+
 greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
-rangeop  		"sum"|"product"|"integral"
 
 %%
  /* Typesetting */
@@ -86,6 +85,11 @@ rangeop  		"sum"|"product"|"integral"
 "subset"		{ return B_SUBSET; }
 "in"			{ return B_IN;}
 
+ /* Range Operators */
+"sum" 			{ return R_SUM; }
+"product"		{ return R_PROD; }
+"integral"		{ return R_INTG; }
+
  /* Patterns */
 "of"			{ return OF; }
 "from"			{ return FROM; }
@@ -106,8 +110,6 @@ rangeop  		"sum"|"product"|"integral"
 {digit}			{ yylval.phrase = strdup(yytext);     return DIGIT;       }
 {capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER;      }
 {greek}			{ yylval.phrase = strdup(yytext);     return GREEK;       }
-{rangeop}		{ yylval.phrase = strdup(yytext);     return RANGEOP;     }
-
 
 {whitespace}    {/* skip whitespace */}
 <<EOF>>         {return ENDFILE;}

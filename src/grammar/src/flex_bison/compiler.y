@@ -52,6 +52,7 @@ static void yyerror(Syntax_visitor&, const char*);
 	Special_symbol_type ss_type;
 	Unop_type u_type;
 	Binop_type b_type;
+	Rangeop_type r_type;
 }
 
 /* TODO?: Start symbol */
@@ -65,7 +66,7 @@ static void yyerror(Syntax_visitor&, const char*);
 /* keywords */
 %token OF FROM TO FUNCTION FRACTION OVER MAPS OPEN CLOSE PARENTHESIS END
 /* operators */
-%token MINUS NOT RANGEOP
+%token MINUS NOT
 /* typesettings */
 %token TS_BOLD TS_CALL TS_FRAK
 /* accents */
@@ -76,6 +77,8 @@ static void yyerror(Syntax_visitor&, const char*);
 %token U_SQRT U_SIN U_COS U_TAN U_EXP U_LOG U_NEG U_FORALL U_EXISTS
 /* binary operators */
 %token B_PLUS B_TIMES B_POWER B_DIV B_MID B_EQ B_ISO B_LT B_GT B_LE B_GE B_AND B_OR B_IMPL B_EQUIV B_CUP B_CAP B_SMINUS B_SUBSET B_IN
+/* range operators */
+%token R_SUM R_PROD R_INTG
 /* endfile */
 %token ENDFILE 0
 
@@ -122,12 +125,9 @@ expr 			: func {
 					move_in_subtree(*$<tree>$, $<tree>2);
 					move_in_subtree(*$<tree>$, $<tree>3);
 				}
-				| RANGEOP range anyexpr {
+				| range_op range anyexpr {
 					$<tree>$ = new Syntax_tree(Con::Type::Expr_binop);
-					// Should be <rangeop_type> instead of <phrase> if the lexer provides it
-					$<tree>$->append_subtree(Syntax_tree(
-						Con::Type::Rangeop, move_to_string($<phrase>1)
-					));
+					$<tree>$->append_subtree(Syntax_tree(Con::Type::Rangeop, $<r_type>1));
 					move_in_subtree(*$<tree>$, $<tree>2);
 					move_in_subtree(*$<tree>$, $<tree>3);
 				}
@@ -339,6 +339,15 @@ binary_op 		: B_PLUS {
 				| B_IN {
 					$<b_type>$ = Binop_type::In;
 				};
+range_op 		: R_SUM {
+					$<r_type>$ = Rangeop_type::Sum;
+				}
+				| R_PROD {
+					$<r_type>$ = Rangeop_type::Product;
+				}
+				| R_INTG {
+					$<r_type>$ = Rangeop_type::Integral;
+				};	
 %%
 
 static void yyerror(Syntax_visitor& vis, const char* s) {
