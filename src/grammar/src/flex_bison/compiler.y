@@ -47,6 +47,8 @@ static void yyerror(Syntax_visitor&, const char*);
 	char letter;
 	char* phrase;
 	Syntax_tree* tree;
+	Typesetting_type ts_type;
+	Accent_type ac_type;
 }
 
 /* TODO?: Start symbol */
@@ -56,11 +58,15 @@ static void yyerror(Syntax_visitor&, const char*);
 
 /* Tokens */
 /* symbol */
-%token LETTER TYPESETTING ACCENT GREEK DIGIT SYMBOL
+%token LETTER GREEK DIGIT SYMBOL
 /* keywords */
 %token OF FROM TO FUNCTION FRACTION OVER MAPS OPEN CLOSE PARENTHESIS END
 /* operators */
 %token UNOP MINUS BINOP NOT RANGEOP
+/* typesettings */
+%token TS_BOLD TS_CALL TS_FRAK
+/* accents */
+%token AC_TILDE AC_HAT AC_BAR
 /* endfile */
 %token ENDFILE 0
 
@@ -153,13 +159,10 @@ symbol 			: DIGIT {
 						Con::Type::Symbol_special, move_to_string($<phrase>1)
 					);
 				};
-variable 		: variable ACCENT {
+variable 		: variable accent {
 					$<tree>$ = new Syntax_tree(Con(Con::Type::Variable_accent));
 					move_in_subtree(*$<tree>$, $<tree>1);
-					// Should be <accent_type> instead of <phrase> if the lexer provides it
-					$<tree>$->append_subtree(Syntax_tree(
-						Con::Type::Accent, move_to_string($<phrase>2)
-					));
+					$<tree>$->append_subtree(Syntax_tree(Con::Type::Accent, $<ac_type>2));
 				}
 				| typed_variable {
 					$<tree>$ = $<tree>1;
@@ -167,12 +170,9 @@ variable 		: variable ACCENT {
 typed_variable	: letter {
 					$<tree>$ = $<tree>1;
 				}
-				| TYPESETTING typed_variable {
+				| typesetting typed_variable {
 					$<tree>$ = new Syntax_tree(Con::Type::Variable_typesetting);
-					// Should be <typesetting_type> instead of <phrase> if the lexer provides it
-					$<tree>$->append_subtree(Syntax_tree(
-						Con::Type::Typesetting, move_to_string($<phrase>1)
-					));
+					$<tree>$->append_subtree(Syntax_tree(Con::Type::Typesetting, $<ts_type>1));
 					move_in_subtree(*$<tree>$, $<tree>2);
 				};
 letter 			: LETTER {
@@ -225,7 +225,24 @@ range 			: FROM openexpr TO anyexpr {
 					move_in_subtree(*$<tree>$, $<tree>2);
 					move_in_subtree(*$<tree>$, $<tree>4);
 				}
-
+typesetting 	: TS_BOLD {
+					$<ts_type>$ = Typesetting_type::Bold; 
+				}
+				| TS_CALL {
+					$<ts_type>$ = Typesetting_type::Calligraphic;
+				}
+				| TS_FRAK {
+					$<ts_type>$ = Typesetting_type::Fraktur;
+				};
+accent 			: AC_TILDE {
+					$<ac_type>$ = Accent_type::Tilde;
+				}
+				| AC_HAT {
+					$<ac_type>$ = Accent_type::Hat;
+				}
+				| AC_BAR {
+					$<ac_type>$ = Accent_type::Bar;
+				};
 %%
 
 static void yyerror(Syntax_visitor& vis, const char* s) {

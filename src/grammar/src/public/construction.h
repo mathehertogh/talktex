@@ -139,9 +139,9 @@ inline std::ostream& operator<<(std::ostream& os, Typesetting_type type) {
 
 inline std::string to_string(Accent_type type) {
 	switch (type) {
-	case Accent_type::Tilde: return "Bold";
-	case Accent_type::Hat: return "Calligraphic";
-	case Accent_type::Bar: return "Fraktur";
+	case Accent_type::Tilde: return "Tilde";
+	case Accent_type::Hat: return "Hat";
+	case Accent_type::Bar: return "Bar";
 	}
 	return "Error";
 }

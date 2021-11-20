@@ -35,16 +35,24 @@ letter 			[a-z]
 digit  			"zero"|"one"|"two"|"three"|"four"|"five"|"six"|"seven"|"eight"|"nine"
 capital  		"capital "[a-z]
 whitespace 		[ \t]+
-typesetting 	"bold"|"calligraphic"|"fraktur"
-accent 			"tilde"|"hat"|"bar"
 greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
 symbol 			"empty set"|"infinity"
 unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"
 binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"less"|"greater"|"less equal"|"greater equal"|"and"|"or"|"implies"|"equivalent"|"union"|"intersection"|"set minus"|"subset"|"in"
 rangeop  		"sum"|"product"|"integral"
 
-/* Patterns */
 %%
+ /* Typesetting */
+"bold" 			{ return TS_BOLD; }
+"calligraphic" 	{ return TS_CALL; }
+"fraktur"		{ return TS_FRAK; }
+
+ /* Accent */
+"tilde" 		{ return AC_TILDE; }
+"hat"			{ return AC_HAT; }
+"bar"			{ return AC_BAR; }
+
+ /* Patterns */
 "of"			{ return OF; }
 "from"			{ return FROM; }
 "to"			{ return TO; }
@@ -60,8 +68,6 @@ rangeop  		"sum"|"product"|"integral"
 "minus"			{ return MINUS; }
 "not" 			{ return NOT; }
 
-{typesetting} 	{ yylval.phrase = strdup(yytext);     return TYPESETTING; }
-{accent} 		{ yylval.phrase = strdup(yytext);     return ACCENT;      }
 {letter} 		{ yylval.letter = yytext[0];          return LETTER;      }
 {digit}			{ yylval.phrase = strdup(yytext);     return DIGIT;       }
 {capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER;      }
