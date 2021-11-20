@@ -10,7 +10,7 @@ libgrammar_dep = declare_dependency(include_directories : inc, link_with : libgr
 libgrammar_exe = executable(
 	'compiler_latex_generator', 
 	'src/cpp/entrypoint/main.cpp', 
-	dependencies: libgrammar_depends + [libgrammar_dep],
+	dependencies: libgrammar_depends + [tclap.get_variable('tclap_dep'), libgrammar_dep],
 	include_directories: inc,
 	install: true
 )

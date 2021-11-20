@@ -8,6 +8,8 @@
 #include "avds/tree/tree_output.h"
 #include "latex_generation.h"
 
+#include <tclap/CmdLine.h>
+
 const std::string SEPARATOR = "\n" + std::string(140, '=') + "\n\n";
 
 const char* tests[] = 	{"b", "calligraphic b", "b tilde", "bold b hat", "capital a", "bold capital a hat",
@@ -18,18 +20,59 @@ const char* tests[] = 	{"b", "calligraphic b", "b tilde", "bold b hat", "capital
 						"fraction b over c plus d", "fraction b over c end plus d", "a not equal b",
 						"sum from x equal zero to infinity x power two", "open parenthesis x plus two close parenthesis"};
 
-int main() {
-	Logger logger(std::cerr, std::cerr, std::cerr);
-	Syntax_visitor vis(logger);
+int main(int argc, char** argv) {
+	TCLAP::CmdLine cmd("TalkTex compiler - LaTeX generator", ' ', "1.0");
 
-	for (const char* test : tests) {
-		std::cerr << SEPARATOR
-		          << "Input: " << aec::bold + aec::green << test << aec::reset << "\n";
+	try {
+		TCLAP::ValueArg<std::string> inputFilenameArg("f", "file", "Path to source file.", false, "", "string");
+		TCLAP::ValueArg<std::string> inputArg("i", "input", "Input string to parse.", false, "", "string");
+		TCLAP::SwitchArg testSwitch("t", "tests", "Perform tests", false);
+		TCLAP::SwitchArg verboseSwitch("v", "verbose", "Show verbose output", cmd, false);
 
-		grammar::generate_from_string(test, vis);
-		std::cerr << "\nLaTeX: " << to_latex(vis.syntax_tree.entrance()) << "\n";
+		TCLAP::OneOf inputs;
+		inputs.add(inputFilenameArg).add(inputArg).add(testSwitch);
+		cmd.add(inputs);
+		cmd.parse(argc, argv);
+		
+		Logger logger(std::cerr, std::cerr, std::cerr);
+		Syntax_visitor vis(logger);
+
+		bool verbose = verboseSwitch.getValue();
+
+		if (testSwitch.isSet()) {
+			for (const char* test : tests) {
+				if (verbose) 
+					std::cerr << SEPARATOR << "Input: " << aec::bold + aec::green << test << aec::reset << "\n";
+				grammar::generate_from_string(test, vis);
+				if (verbose)
+					std::cerr << "LaTeX: ";
+				std::cerr << to_latex(vis.syntax_tree.entrance()) << "\n";
+			}
+		} else if (inputFilenameArg.isSet()) {
+			const std::string& inputFilePath = inputFilenameArg.getValue();
+			if (verbose) 
+				std::cerr << SEPARATOR << "File: " << aec::bold + aec::green << inputFilePath << aec::reset << "\n";
+			grammar::generate_from_file(inputFilePath, vis);
+			if (verbose)
+				std::cerr << "LaTeX: ";
+			std::cerr << to_latex(vis.syntax_tree.entrance()) << "\n";
+		} else if (inputArg.isSet()) {
+			const std::string& input = inputArg.getValue();
+			if (verbose) 
+				std::cerr << SEPARATOR << "Input: " << aec::bold + aec::green << input << aec::reset << "\n";
+			grammar::generate_from_string(input, vis);
+			if (verbose)
+				std::cerr << "LaTeX: ";
+			std::cerr << to_latex(vis.syntax_tree.entrance()) << "\n";
+		}
+
+		if (verbose)
+			std::cerr << SEPARATOR;
+
+	} catch (TCLAP::ArgException& e) {
+		std::cerr << aec::bold + aec::red << "command-line error: " << aec::reset << e.error() << " for arg " << e.argId() << std::endl;
+		return 1;
 	}
-	std::cerr << SEPARATOR;
 
 	return 0;
 }

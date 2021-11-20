@@ -2,6 +2,8 @@ project('talktex', 'cpp', version : '1.0', default_options : ['warning_level=3',
 
 build_system = build_machine.system() # Name of the system we build on.
 
+tclap = subproject('tclap-1.4.0-rc1_vendored')
+
 # Generators
 flex = find_program('flex', required: true)
 flex_gen = generator(
