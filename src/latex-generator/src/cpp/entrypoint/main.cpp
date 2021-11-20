@@ -31,7 +31,5 @@ int main() {
 	}
 	std::cerr << SEPARATOR;
 
-	std::cerr << "You might want to make your terminal fullscreen :)\n";
-
 	return 0;
 }
