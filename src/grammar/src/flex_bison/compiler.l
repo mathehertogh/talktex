@@ -36,9 +36,6 @@ digit  			"zero"|"one"|"two"|"three"|"four"|"five"|"six"|"seven"|"eight"|"nine"
 capital  		"capital "[a-z]
 whitespace 		[ \t]+
 greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"kappa"|"lambda"|"mu"|"nu"|"xi"|"pi"|"rho"|"sigma"|"tau"|"upsilon"|"phi"|"chi"|"psi"|"omega"
-symbol 			"empty set"|"infinity"
-unop			"square root"|"sin"|"cos"|"tan"|"exp"|"log"|"negate"|"for all"|"exists"
-binop  			"plus"|"times"|"power"|"divided by"|"divides"|"equal"|"isomorphic"|"less"|"greater"|"less equal"|"greater equal"|"and"|"or"|"implies"|"equivalent"|"union"|"intersection"|"set minus"|"subset"|"in"
 rangeop  		"sum"|"product"|"integral"
 
 %%
@@ -51,6 +48,43 @@ rangeop  		"sum"|"product"|"integral"
 "tilde" 		{ return AC_TILDE; }
 "hat"			{ return AC_HAT; }
 "bar"			{ return AC_BAR; }
+
+ /* Special Symbol */
+"empty set" 	{ return SS_EMPTY; }
+"infinity"		{ return SS_INFTY; }
+
+ /* Unary Operators */
+"square root" 	{ return U_SQRT; }
+"sin"			{ return U_SIN; }
+"cos"			{ return U_COS; }
+"tan" 			{ return U_TAN; }
+"exp"			{ return U_EXP; }
+"log"			{ return U_LOG; }
+"negate"		{ return U_NEG; }
+"for all"		{ return U_FORALL; }
+"exists"		{ return U_EXISTS; }
+
+ /* Binary Operators */
+"plus" 			{ return B_PLUS; }
+"times"			{ return B_TIMES; }
+"power"			{ return B_POWER; }
+"divided by" 	{ return B_DIV; }
+"divides"		{ return B_MID; }
+"equal"			{ return B_EQ; }
+"isomorphic"	{ return B_ISO; }
+"less"			{ return B_LT; }
+"greater"		{ return B_GT; }
+"less equal"	{ return B_LE; }
+"greater equal"	{ return B_GE; }
+"and"			{ return B_AND; }
+"or"			{ return B_OR; }
+"implies"		{ return B_IMPL; }
+"equivalent"	{ return B_EQUIV; }
+"union" 		{ return B_CUP; }
+"intersection"	{ return B_CAP; }
+"set minus"		{ return B_SMINUS; }
+"subset"		{ return B_SUBSET; }
+"in"			{ return B_IN;}
 
  /* Patterns */
 "of"			{ return OF; }
@@ -72,9 +106,6 @@ rangeop  		"sum"|"product"|"integral"
 {digit}			{ yylval.phrase = strdup(yytext);     return DIGIT;       }
 {capital} 		{ yylval.letter = toupper(yytext[8]); return LETTER;      }
 {greek}			{ yylval.phrase = strdup(yytext);     return GREEK;       }
-{symbol}   		{ yylval.phrase = strdup(yytext);     return SYMBOL;      }
-{unop}			{ yylval.phrase = strdup(yytext);     return UNOP;        }
-{binop} 		{ yylval.phrase = strdup(yytext);     return BINOP;       }
 {rangeop}		{ yylval.phrase = strdup(yytext);     return RANGEOP;     }
 
 

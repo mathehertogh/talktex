@@ -49,6 +49,9 @@ static void yyerror(Syntax_visitor&, const char*);
 	Syntax_tree* tree;
 	Typesetting_type ts_type;
 	Accent_type ac_type;
+	Special_symbol_type ss_type;
+	Unop_type u_type;
+	Binop_type b_type;
 }
 
 /* TODO?: Start symbol */
@@ -58,15 +61,21 @@ static void yyerror(Syntax_visitor&, const char*);
 
 /* Tokens */
 /* symbol */
-%token LETTER GREEK DIGIT SYMBOL
+%token LETTER GREEK DIGIT
 /* keywords */
 %token OF FROM TO FUNCTION FRACTION OVER MAPS OPEN CLOSE PARENTHESIS END
 /* operators */
-%token UNOP MINUS BINOP NOT RANGEOP
+%token MINUS NOT RANGEOP
 /* typesettings */
 %token TS_BOLD TS_CALL TS_FRAK
 /* accents */
 %token AC_TILDE AC_HAT AC_BAR
+/* special symbols */
+%token SS_EMPTY SS_INFTY
+/* unary operators */
+%token U_SQRT U_SIN U_COS U_TAN U_EXP U_LOG U_NEG U_FORALL U_EXISTS
+/* binary operators */
+%token B_PLUS B_TIMES B_POWER B_DIV B_MID B_EQ B_ISO B_LT B_GT B_LE B_GE B_AND B_OR B_IMPL B_EQUIV B_CUP B_CAP B_SMINUS B_SUBSET B_IN
 /* endfile */
 %token ENDFILE 0
 
@@ -74,7 +83,7 @@ static void yyerror(Syntax_visitor&, const char*);
 %right END NOEND
 
 /*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
-%right OF NOT BINOP
+%right OF NOT B_PLUS B_TIMES B_POWER B_DIV B_MID B_EQ B_ISO B_LT B_GT B_LE B_GE B_AND B_OR B_IMPL B_EQUIV B_CUP B_CAP B_SMINUS B_SUBSET B_IN MINUS
 
 %parse-param {Syntax_visitor& syntax_visitor}
 
@@ -107,7 +116,7 @@ expr 			: func {
 					move_in_subtree(*$<tree>$, $<tree>2);
 					move_in_subtree(*$<tree>$, $<tree>4);
 				}
-				| openexpr binop anyexpr %prec BINOP {
+				| openexpr binop anyexpr  {
 					$<tree>$ = new Syntax_tree(Con::Type::Expr_binop);
 					move_in_subtree(*$<tree>$, $<tree>1);
 					move_in_subtree(*$<tree>$, $<tree>2);
@@ -153,11 +162,8 @@ symbol 			: DIGIT {
 					$<tree>$ = new Syntax_tree(Con::Type::Symbol_variable);
 					move_in_subtree(*$<tree>$, $<tree>1);
 				}
-				| SYMBOL {
-					// Should be <special_symbol_type> instead of <phrase> if the lexer provides it
-					$<tree>$ = new Syntax_tree(
-						Con::Type::Symbol_special, move_to_string($<phrase>1)
-					);
+				| special_symbol {
+					$<tree>$ = new Syntax_tree(Con::Type::Symbol_special, $<ss_type>1);
 				};
 variable 		: variable accent {
 					$<tree>$ = new Syntax_tree(Con(Con::Type::Variable_accent));
@@ -201,24 +207,15 @@ mapsto 			: MAPS openexpr TO anyexpr {
 					move_in_subtree(*$<tree>$, $<tree>2);
 					move_in_subtree(*$<tree>$, $<tree>4);
 				};
-unop 			: UNOP {
-					// Should be <unop_type> instead of <phrase> if the lexer provides it
-					$<tree>$ = new Syntax_tree(Con::Type::Unop, move_to_string($<phrase>1));
-				}
-				| MINUS {
-					// Should be Unop_type::Negate instead of "minus" if we start using those
-					$<tree>$ = new Syntax_tree(Con::Type::Unop, "minus");
+unop 			: unary_op {
+					$<tree>$ = new Syntax_tree(Con::Type::Unop, $<u_type>1);
 				};
-binop 			: BINOP {
-					// Should be <binop_type> instead of <phrase> if the lexer provides it
-					$<tree>$ = new Syntax_tree(Con::Type::Binop, move_to_string($<phrase>1));
+binop 			: binary_op  {
+					$<tree>$ = new Syntax_tree(Con::Type::Binop, $<b_type>1);
 				}
-				| NOT BINOP {
+				| NOT binary_op  {
 					$<tree>$ = new Syntax_tree(Con::Type::Binop_negated);
-					// Should be <binop_type> instead of <phrase> if the lexer provides it
-					$<tree>$->append_subtree(Syntax_tree(
-						Con::Type::Binop, move_to_string($<phrase>2)
-					));
+					$<tree>$->append_subtree(Syntax_tree(Con::Type::Binop, $<b_type>2));
 				};
 range 			: FROM openexpr TO anyexpr {
 					$<tree>$ = new Syntax_tree(Con(Con::Type::Range));
@@ -242,6 +239,105 @@ accent 			: AC_TILDE {
 				}
 				| AC_BAR {
 					$<ac_type>$ = Accent_type::Bar;
+				};
+special_symbol 	: SS_EMPTY {
+					$<ss_type>$ = Special_symbol_type::Empty_set;
+				}
+				| SS_INFTY {
+					$<ss_type>$ = Special_symbol_type::Infinity;
+				};
+unary_op 		: U_SQRT {
+					$<u_type>$ = Unop_type::Square_root;
+				}
+				| U_SIN {
+					$<u_type>$ = Unop_type::Sin;
+				}
+				| U_COS {
+					$<u_type>$ = Unop_type::Cos;
+				}
+				| U_TAN {
+					$<u_type>$ = Unop_type::Tan;
+				}
+				| U_EXP {
+					$<u_type>$ = Unop_type::Exp;
+				}
+				| U_LOG {
+					$<u_type>$ = Unop_type::Log;
+				}
+				| U_NEG {
+					$<u_type>$ = Unop_type::Negate;
+				}
+				| U_FORALL {
+					$<u_type>$ = Unop_type::For_all;
+				}
+				| U_EXISTS {
+					$<u_type>$ = Unop_type::Exists;
+				}
+				| MINUS {
+					$<u_type>$ = Unop_type::Minus;
+				}
+binary_op 		: B_PLUS {
+					$<b_type>$ = Binop_type::Plus;
+				}
+				| MINUS {
+					$<b_type>$ = Binop_type::Minus;
+				}
+				| B_TIMES {
+					$<b_type>$ = Binop_type::Times;
+				} 
+				| B_POWER {
+					$<b_type>$ = Binop_type::Power;
+				}
+				| B_DIV {
+					$<b_type>$ = Binop_type::Divided_by;
+				}
+				| B_MID {
+					$<b_type>$ = Binop_type::Divides;
+				}
+				| B_EQ {
+					$<b_type>$ = Binop_type::Equal;
+				}
+				| B_ISO {
+					$<b_type>$ = Binop_type::Isomorphic;
+				}
+				| B_LT {
+					$<b_type>$ = Binop_type::Less;
+				}
+				| B_GT {
+					$<b_type>$ = Binop_type::Greater;
+				}
+				| B_LE {
+					$<b_type>$ = Binop_type::Less_equal;
+				}
+				| B_GE {
+					$<b_type>$ = Binop_type::Greater_equal;
+				}
+				| B_AND {
+					$<b_type>$ = Binop_type::And;
+				}
+				| B_OR {
+					$<b_type>$ = Binop_type::Or;
+				}
+				| B_IMPL {
+					$<b_type>$ = Binop_type::Implies;
+				}
+				| B_EQUIV {
+					$<b_type>$ = Binop_type::Equivalent;
+				}
+				| B_CUP {
+					$<b_type>$ = Binop_type::Union;
+				}
+				| B_CAP {
+					$<b_type>$ = Binop_type::Intersection;
+				}
+				| B_SMINUS {
+					$<b_type>$ = Binop_type::Set_minus;
+				}
+				| B_SUBSET {
+					$<b_type>$ = Binop_type::Subset;
+				}
+				| B_IN {
+					$<b_type>$ = Binop_type::In;
 				};
 %%
 

@@ -35,7 +35,8 @@ enum class Unop_type {
 	Log,
 	Negate,
 	For_all,
-	Exists
+	Exists, 
+	Minus
 };
 
 enum class Binop_type {
@@ -171,6 +172,7 @@ inline std::string to_string(Unop_type type) {
 	case Unop_type::Negate: return "Negate";
 	case Unop_type::For_all: return "For_all";
 	case Unop_type::Exists: return "Exists";
+	case Unop_type::Minus: return "UMinus";
 	}
 	return "Error";
 }
