@@ -175,7 +175,7 @@ std::string to_latex(Syntax_tree::const_traverser t) {
 	case Construction::Type::Expr_func:
 		return child(0);
 	case Construction::Type::Expr_frac:
-		return child(0);
+		return command("frac") + brace(child(0)) + brace(child(1));
 	case Construction::Type::Expr_symbol:
 		return child(0);
 	case Construction::Type::Func:
@@ -186,8 +186,6 @@ std::string to_latex(Syntax_tree::const_traverser t) {
 		return child(0) + " " + command("mapsto ") + child(1);
 	case Construction::Type::Openfunc:
 		return child(0) + ": " + child(1) + " " + command("to ") + child(2);
-	case Construction::Type::Frac:
-		return command("frac") + brace(child(0)) + brace(child(1));
 	case Construction::Type::Range:
 		return "_" + brace(child(0)) + "^" + brace(child(1));
 	case Construction::Type::Rangeop:

@@ -87,7 +87,6 @@ struct Construction {
 		Func_mapsto,
 		Mapsto,
 		Openfunc,
-		Frac,
 		Range,
 		Rangeop,
 		Binop,
@@ -236,7 +235,6 @@ inline std::string to_string(Construction::Type type) {
 	case Construction::Type::Func_mapsto: return "Func_mapsto";
 	case Construction::Type::Mapsto: return "Mapsto";
 	case Construction::Type::Openfunc: return "Openfunc";
-	case Construction::Type::Frac: return "Frac";
 	case Construction::Type::Range: return "Range";
 	case Construction::Type::Rangeop: return "Rangeop";
 	case Construction::Type::Binop: return "Binop";
