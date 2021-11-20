@@ -6,6 +6,7 @@
 #include "syntax_visitor.h"
 #include "aecpp.h"
 #include "avds/tree/tree_output.h"
+#include "latex_generation.h"
 
 const std::string SEPARATOR = "\n" + std::string(140, '=') + "\n\n";
 
@@ -23,12 +24,10 @@ int main() {
 
 	for (const char* test : tests) {
 		std::cerr << SEPARATOR
-		          << "Input: " << aec::bold + aec::green << test << aec::reset << "\n"
-		          << "Parse tree:\n\n";
+		          << "Input: " << aec::bold + aec::green << test << aec::reset << "\n";
 
 		grammar::generate_from_string(test, vis);
-
-		avds::tree::print_horizontal(std::cerr, vis.syntax_tree.entrance());
+		std::cerr << "\nLaTeX: " << to_latex(vis.syntax_tree.entrance()) << "\n";
 	}
 	std::cerr << SEPARATOR;
 

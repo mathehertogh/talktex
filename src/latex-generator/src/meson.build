@@ -1,0 +1,1 @@
+libgrammar_files += files('cpp/latex_generation.cpp')
