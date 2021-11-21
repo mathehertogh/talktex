@@ -22,7 +22,7 @@ std::string brace(const std::string& inner) {
 
 std::string texify_rangeop(Rangeop_type type) {
 	static const std::map<Rangeop_type, std::string> map{
-		{Rangeop_type::Sum,             command("sum") },
+		{Rangeop_type::Sum,             command("sum")},
 		{Rangeop_type::Product,         command("prod")},
 		{Rangeop_type::Integral,        command("int")}
 	};
@@ -35,25 +35,25 @@ std::string texify_binop(Binop_type type) {
 	static const std::map<Binop_type, std::string> map{
 		{Binop_type::Plus,          "+"},
 		{Binop_type::Minus,         "-"},
-		{Binop_type::Times,         command("cdot")},
+		{Binop_type::Times,         command("cdot ")},
 		{Binop_type::Power,         "^"},
 		{Binop_type::Divided_by,    "/"},
-		{Binop_type::Divides,       command("mid")},
+		{Binop_type::Divides,       command("mid ")},
 		{Binop_type::Equal,         "="},
-		{Binop_type::Isomorphic,    command("cong")},
+		{Binop_type::Isomorphic,    command("cong ")},
 		{Binop_type::Less,          "<"},
 		{Binop_type::Greater,       ">"},
-		{Binop_type::Less_equal,    command("leq")},
-		{Binop_type::Greater_equal, command("geq")},
-		{Binop_type::And,           command("wedge")},
-		{Binop_type::Or,            command("vee")},
-		{Binop_type::Implies,       command("implies")},
-		{Binop_type::Equivalent,    command("Leftrightarrow")},
-		{Binop_type::Union,         command("cup")},
-		{Binop_type::Intersection,  command("cap")},
-		{Binop_type::Set_minus,     command("setminus")},
-		{Binop_type::Subset,        command("subset")},
-		{Binop_type::In,            command("in")}
+		{Binop_type::Less_equal,    command("leq ")},
+		{Binop_type::Greater_equal, command("geq ")},
+		{Binop_type::And,           command("wedge ")},
+		{Binop_type::Or,            command("vee ")},
+		{Binop_type::Implies,       command("implies ")},
+		{Binop_type::Equivalent,    command("Leftrightarrow ")},
+		{Binop_type::Union,         command("cup ")},
+		{Binop_type::Intersection,  command("cap ")},
+		{Binop_type::Set_minus,     command("setminus ")},
+		{Binop_type::Subset,        command("subset ")},
+		{Binop_type::In,            command("in ")}
 	};
 	auto it = map.find(type);
 	if (it != map.end()) return it->second;
@@ -62,15 +62,15 @@ std::string texify_binop(Binop_type type) {
 
 std::string texify_unop(Unop_type type) {
 	static const std::map<Unop_type, std::string> map{
-		{Unop_type::Square_root, command("sqrt")},
-		{Unop_type::Sin,         command("sin")},
-		{Unop_type::Cos,         command("cos")},
-		{Unop_type::Tan,         command("tan")},
-		{Unop_type::Exp,         command("exp")},
-		{Unop_type::Log,         command("log")},
-		{Unop_type::Negate,      command("neg")},
-		{Unop_type::For_all,     command("forall")},
-		{Unop_type::Exists,      command("exists")},
+		{Unop_type::Square_root, command("sqrt ")},
+		{Unop_type::Sin,         command("sin ")},
+		{Unop_type::Cos,         command("cos ")},
+		{Unop_type::Tan,         command("tan ")},
+		{Unop_type::Exp,         command("exp ")},
+		{Unop_type::Log,         command("log ")},
+		{Unop_type::Negate,      command("neg ")},
+		{Unop_type::For_all,     command("forall ")},
+		{Unop_type::Exists,      command("exists ")},
 		{Unop_type::Minus,       "-"}
 	};
 	auto it = map.find(type);
@@ -101,7 +101,7 @@ std::string texify_accent(Accent_type type) {
 
 std::string texify_typesetting(Typesetting_type type) {
 	static const std::map<Typesetting_type, std::string> map{
-		{Typesetting_type::Bold,         command("mathbb") },
+		{Typesetting_type::Bold,         command("mathbb")},
 		{Typesetting_type::Calligraphic, command("mathcal")},
 		{Typesetting_type::Fraktur,      command("mathfrak")}
 	};
@@ -155,11 +155,11 @@ std::string to_latex(Syntax_tree::const_traverser t) {
 	case Construction::Type::Expr_parentheses:
 		return parenthesize(child(0));
 	case Construction::Type::Expr_range:
-		return child(0) + child(1) + " " + child(2);
+		return child(0) + child(1) + child(2);
 	case Construction::Type::Expr_binop:
-		return child(0) + " " + child(1) + " " + child(2);
+		return child(0) + child(1) + child(2);
 	case Construction::Type::Expr_unop:
-		return child(0) + " " + child(1);
+		return child(0) + child(1);
 	case Construction::Type::Expr_of:
 		return child(0) + parenthesize(child(1));
 	case Construction::Type::Expr_func:
