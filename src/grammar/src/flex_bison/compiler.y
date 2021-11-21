@@ -42,7 +42,9 @@ static void yyerror(Syntax_visitor&, const char*);
 /* Provides more useful error messages */
 %define parse.error verbose
 
-/* Types to pass between lexer, rules and actions*/
+/* Types to pass between lexer, rules and actions.
+   Note: bison has a variant option, which would alleviate the need to allocate and deallocate
+   c-strings and Syntax_tree objects all the time. Can't get it to work though. */
 %union {
 	char letter;
 	char* phrase;
@@ -92,7 +94,6 @@ static void yyerror(Syntax_visitor&, const char*);
 
 %%
 
-/* TODO: memory managament! Note: bison has a variant option, can't get it to work though. */
 /* Grammar Rules and Actions */
 start 			: anyexpr {
 					syntax_visitor.syntax_tree = std::move(*$<tree>1);
@@ -223,7 +224,7 @@ range 			: FROM openexpr TO anyexpr {
 					move_in_subtree(*$<tree>$, $<tree>4);
 				}
 typesetting 	: TS_BOLD {
-					$<ts_type>$ = Typesetting_type::Bold; 
+					$<ts_type>$ = Typesetting_type::Bold;
 				}
 				| TS_CALL {
 					$<ts_type>$ = Typesetting_type::Calligraphic;
@@ -284,7 +285,7 @@ binary_op 		: B_PLUS {
 				}
 				| B_TIMES {
 					$<b_type>$ = Binop_type::Times;
-				} 
+				}
 				| B_POWER {
 					$<b_type>$ = Binop_type::Power;
 				}
@@ -347,7 +348,7 @@ range_op 		: R_SUM {
 				}
 				| R_INTG {
 					$<r_type>$ = Rangeop_type::Integral;
-				};	
+				};
 %%
 
 static void yyerror(Syntax_visitor& vis, const char* s) {

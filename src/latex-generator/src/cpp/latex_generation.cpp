@@ -6,12 +6,11 @@
 // Helper functions and constants
 //==================================================================================================
 
-
 std::string command(const std::string& name) {
 	return "\\" + name;
 }
- 
-std::string ERROR_TARGET = "\\ " + command("text{Internal TalkTeX Error}\\ ");
+
+std::string ERROR_TARGET = command(" ") + command("text{Internal TalkTeX Error}") + command(" ");
 
 std::string parenthesize(const std::string& inner) {
 	return command("left(") + inner + command("right)");
@@ -21,14 +20,11 @@ std::string brace(const std::string& inner) {
 	return "{" + inner + "}";
 }
 
-// TODO: All of these texify functions should really be done by the lexer, so that we can use
-//       the various enums in Construction.h here instead.
-
 std::string texify_rangeop(Rangeop_type type) {
 	static const std::map<Rangeop_type, std::string> map{
-		{Rangeop_type::Sum,         	command("sum") },
-		{Rangeop_type::Product, 		command("prod")},
-		{Rangeop_type::Integral,      	command("int")}
+		{Rangeop_type::Sum,             command("sum") },
+		{Rangeop_type::Product,         command("prod")},
+		{Rangeop_type::Integral,        command("int")}
 	};
 	auto it = map.find(type);
 	if (it != map.end()) return it->second;
@@ -37,27 +33,27 @@ std::string texify_rangeop(Rangeop_type type) {
 
 std::string texify_binop(Binop_type type) {
 	static const std::map<Binop_type, std::string> map{
-		{Binop_type::Plus,			"+"},
-		{Binop_type::Minus, 		"-"},
-		{Binop_type::Times,      	command("cdot")},
-		{Binop_type::Power, 		"^"},
-		{Binop_type::Divided_by, 	"/"},
-		{Binop_type::Divides, 		command("mid")},
-		{Binop_type::Equal, 		"="},
-		{Binop_type::Isomorphic, 	command("cong")},
-		{Binop_type::Less, 			"<"},
-		{Binop_type::Greater, 		">"},
-		{Binop_type::Less_equal, 	command("leq")},
+		{Binop_type::Plus,          "+"},
+		{Binop_type::Minus,         "-"},
+		{Binop_type::Times,         command("cdot")},
+		{Binop_type::Power,         "^"},
+		{Binop_type::Divided_by,    "/"},
+		{Binop_type::Divides,       command("mid")},
+		{Binop_type::Equal,         "="},
+		{Binop_type::Isomorphic,    command("cong")},
+		{Binop_type::Less,          "<"},
+		{Binop_type::Greater,       ">"},
+		{Binop_type::Less_equal,    command("leq")},
 		{Binop_type::Greater_equal, command("geq")},
-		{Binop_type::And, 			command("wedge")},
-		{Binop_type::Or, 			command("vee")},
-		{Binop_type::Implies, 		command("implies")},
-		{Binop_type::Equivalent, 	command("Leftrightarrow")},
-		{Binop_type::Union, 		command("cup")},
-		{Binop_type::Intersection, 	command("cap")},
-		{Binop_type::Set_minus, 	command("setminus")},
-		{Binop_type::Subset, 		command("subset")},
-		{Binop_type::In, 			command("in")}
+		{Binop_type::And,           command("wedge")},
+		{Binop_type::Or,            command("vee")},
+		{Binop_type::Implies,       command("implies")},
+		{Binop_type::Equivalent,    command("Leftrightarrow")},
+		{Binop_type::Union,         command("cup")},
+		{Binop_type::Intersection,  command("cap")},
+		{Binop_type::Set_minus,     command("setminus")},
+		{Binop_type::Subset,        command("subset")},
+		{Binop_type::In,            command("in")}
 	};
 	auto it = map.find(type);
 	if (it != map.end()) return it->second;
@@ -66,16 +62,16 @@ std::string texify_binop(Binop_type type) {
 
 std::string texify_unop(Unop_type type) {
 	static const std::map<Unop_type, std::string> map{
-		{Unop_type::Square_root, 	command("sqrt")},
-		{Unop_type::Sin, 			command("sin")},
-		{Unop_type::Cos, 			command("cos")},
-		{Unop_type::Tan, 			command("tan")},
-		{Unop_type::Exp, 			command("exp")},
-		{Unop_type::Log, 			command("log")},
-		{Unop_type::Negate, 		command("neg")},
-		{Unop_type::For_all, 		command("forall")},
-		{Unop_type::Exists, 		command("exists")},
-		{Unop_type::Minus, 			"-"}
+		{Unop_type::Square_root, command("sqrt")},
+		{Unop_type::Sin,         command("sin")},
+		{Unop_type::Cos,         command("cos")},
+		{Unop_type::Tan,         command("tan")},
+		{Unop_type::Exp,         command("exp")},
+		{Unop_type::Log,         command("log")},
+		{Unop_type::Negate,      command("neg")},
+		{Unop_type::For_all,     command("forall")},
+		{Unop_type::Exists,      command("exists")},
+		{Unop_type::Minus,       "-"}
 	};
 	auto it = map.find(type);
 	if (it != map.end()) return it->second;
@@ -94,9 +90,9 @@ std::string texify_special_symbol(Special_symbol_type type) {
 
 std::string texify_accent(Accent_type type) {
 	static const std::map<Accent_type, std::string> map{
-		{Accent_type::Tilde,	command("tilde")},
-		{Accent_type::Hat, 		command("hat")},
-		{Accent_type::Bar,   	command("bar")}
+		{Accent_type::Tilde, command("tilde")},
+		{Accent_type::Hat,   command("hat")},
+		{Accent_type::Bar,   command("bar")}
 	};
 	auto it = map.find(type);
 	if (it != map.end()) return it->second;
@@ -142,24 +138,18 @@ std::string texify_digit(const std::string& str) {
 
 std::string to_latex(Syntax_tree::const_traverser t) {
 	/// Shorthand to convert a child subtree to latex, since it's used so much.
-	auto child 				= [&](size_t index){return to_latex(t.child(index));};
+	auto child              = [&](size_t index){return to_latex(t.child(index));};
 
-	/// Shorthand to get the typesetting data in the node that t is pointing at.
-	auto get_typesetting	= [&](){return std::get<Typesetting_type>(*t->data);};
-	/// Shorthand to get the accent data in the node that t is pointing at.
-	auto get_accent 		= [&](){return std::get<Accent_type>(*t->data);};
-	/// Shorthand to get the special-symbol data in the node that t is pointing at.
+	// Shorthands to get a specific type of data from the node that t is pointing at:
+
+	auto get_typesetting    = [&](){return std::get<Typesetting_type>   (*t->data);};
+	auto get_accent         = [&](){return std::get<Accent_type>        (*t->data);};
 	auto get_special_symbol = [&](){return std::get<Special_symbol_type>(*t->data);};
-	/// Shorthand to get the unary data in the node that t is pointing at.
-	auto get_unary 			= [&](){return std::get<Unop_type>(*t->data);};
-	/// Shorthand to get the binary data in the node that t is pointing at.
-	auto get_binary 		= [&](){return std::get<Binop_type>(*t->data);};
-	/// Shorthand to get the range data in the node that t is pointing at.
-	auto get_range 			= [&](){return std::get<Rangeop_type>(*t->data);};
-	/// Shorthand to get the string data in the node that t is pointing at.
-	auto get_string 		= [&](){return std::get<std::string>(*t->data);};
-	/// Shorthand to get the char data in the node that t is pointing at.
-	auto get_char  	 		= [&](){return std::get<char>       (*t->data);};
+	auto get_unary          = [&](){return std::get<Unop_type>          (*t->data);};
+	auto get_binary         = [&](){return std::get<Binop_type>         (*t->data);};
+	auto get_range          = [&](){return std::get<Rangeop_type>       (*t->data);};
+	auto get_string         = [&](){return std::get<std::string>        (*t->data);};
+	auto get_char           = [&](){return std::get<char>               (*t->data);};
 
 	switch (t->type) {
 	case Construction::Type::Expr_parentheses:
