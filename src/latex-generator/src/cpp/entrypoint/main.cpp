@@ -10,7 +10,7 @@
 
 #include <tclap/CmdLine.h>
 
-const std::string SEPARATOR = "\n" + std::string(140, '=') + "\n\n";
+const std::string SEPARATOR = "\n" + std::string(100, '=') + "\n\n";
 const auto STYLE_INPUT = aec::bold + aec::green;
 const auto STYLE_ERROR = aec::bold + aec::red;
 
