@@ -1,4 +1,4 @@
-<p align="center"><img src="images/logo-white.png" width="700" /></p>
+![TalkTeX](/images/logo-white-on-black.png?raw=true)
 
 # Purpose
 
