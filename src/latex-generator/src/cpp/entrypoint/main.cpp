@@ -31,7 +31,7 @@ void convert_and_print(Syntax_visitor& visitor, std::istream& is, bool verbose) 
 		}
 
 		grammar::generate_from_string(line, visitor);
-		std::cerr << to_latex(visitor.syntax_tree.entrance()) << "\n";
+		std::cout << to_latex(visitor.syntax_tree.entrance()) << "\n";
 
 		if (verbose) {
 			std::cerr << SEPARATOR;

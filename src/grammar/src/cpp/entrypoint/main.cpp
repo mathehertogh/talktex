@@ -30,7 +30,7 @@ void parse_and_print(Syntax_visitor& visitor, std::istream& is) {
 		          << "Parse tree:\n\n";
 
 		grammar::generate_from_string(line, visitor);
-		avds::tree::print_horizontal(std::cerr, visitor.syntax_tree.entrance());
+		avds::tree::print_horizontal(std::cout, visitor.syntax_tree.entrance());
 
 		std::cerr << SEPARATOR;
 	}
