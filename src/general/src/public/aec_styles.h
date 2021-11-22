@@ -7,6 +7,7 @@
 #include "aecpp.h"
 
 namespace aec_style {
-	inline const auto error = aec::bold + aec::red;
-	inline const auto input = aec::bold + aec::green;
+	inline const auto error    = aec::bold + aec::red;
+	inline const auto filename = aec::bold + aec::yellow;
+	inline const auto input    = aec::bold + aec::green;
 }

@@ -16,15 +16,6 @@ namespace grammar {
 	int generate_from_string(
 		const std::string& input, Syntax_visitor& syntax_visitor
 	);
-
-	/**
-	 * Generates [SyntaxTree] from an input file
-	 * @param filename the input-file
-	 * @return the returncode
-	 */
-	int generate_from_file(
-		const std::string& filename, Syntax_visitor& syntax_visitor
-	);
 }
 
 #endif
