@@ -22,6 +22,5 @@ else
 fi
 
 
-"./make.sh" | grep -Fxv "ninja: no work to do." || true
-"$BUILD_DIR/src/latex-generator/compiler_latex_generator" -d -i "$input" > "latex/talktex-output/output.tex"
+"./run-latex-generator.sh" -d -i "$input" > "latex/talktex-output/output.tex"
 "latex/render-latex.sh" "latex/talktex-output/output.tex"
