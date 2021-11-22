@@ -22,7 +22,9 @@ const char* tests[] = {
 	"sum from x equal zero to infinity x power two", "open parenthesis x plus two close parenthesis"
 };
 
-void convert_and_print(Syntax_visitor& visitor, std::istream& is, bool verbose) {
+void convert_and_print(
+	Syntax_visitor& visitor, std::istream& is, bool create_document, bool verbose
+) {
 	std::string line;
 	while (std::getline(is, line)) {
 		if (verbose) {
@@ -31,7 +33,8 @@ void convert_and_print(Syntax_visitor& visitor, std::istream& is, bool verbose) 
 		}
 
 		grammar::generate_from_string(line, visitor);
-		std::cout << to_latex(visitor.syntax_tree.entrance()) << "\n";
+		auto latex = to_latex(visitor.syntax_tree.entrance());
+		std::cout << (create_document ? to_display_style(latex) : latex ) << "\n";
 
 		if (verbose) {
 			std::cerr << SEPARATOR;
@@ -39,9 +42,11 @@ void convert_and_print(Syntax_visitor& visitor, std::istream& is, bool verbose) 
 	}
 }
 
-void convert_and_print(Syntax_visitor& visitor, const std::string& str, bool verbose) {
+void convert_and_print(
+	Syntax_visitor& visitor, const std::string& str, bool create_document, bool verbose
+) {
 	std::stringstream ss(str);
-	convert_and_print(visitor, ss, verbose);
+	convert_and_print(visitor, ss, create_document, verbose);
 }
 
 int main(int argc, char** argv) {
@@ -51,6 +56,7 @@ int main(int argc, char** argv) {
 		TCLAP::ValueArg<std::string> input_file_path_arg("f", "file", "Path to source file.", false, "", "string");
 		TCLAP::ValueArg<std::string> input_arg("i", "input", "Input string to parse.", false, "", "string");
 		TCLAP::SwitchArg test_switch("t", "tests", "Perform tests", false);
+		TCLAP::SwitchArg create_document_switch("d", "create-document", "Create a full LaTeX document.", cmd, false);
 		TCLAP::SwitchArg verbose_switch("v", "verbose", "Show verbose output", cmd, false);
 
 		TCLAP::OneOf inputs;
@@ -61,27 +67,48 @@ int main(int argc, char** argv) {
 		Logger logger(std::cerr, std::cerr, std::cerr);
 		Syntax_visitor vis(logger);
 
+		bool create_document = create_document_switch.getValue();
 		bool verbose = verbose_switch.getValue();
 
 		if (verbose)
 			std::cerr << SEPARATOR;
 
+		if (create_document) {
+			if (verbose) {
+				std::cerr << "Header:\n\n";
+			}
+			std::cout << talktex_header();
+			if (verbose) {
+				std::cerr << SEPARATOR;
+			}
+		}
+
 		if (test_switch.isSet()) {
 			for (const char* test : tests) {
-				convert_and_print(vis, test, verbose);
+				convert_and_print(vis, test, create_document, verbose);
 			}
 		} else if (input_file_path_arg.isSet()) {
 			const std::string& path = input_file_path_arg.getValue();
 			std::ifstream file;
 			if (try_open_input_file(path, file)) {
-				convert_and_print(vis, file, verbose);
+				convert_and_print(vis, file, create_document, verbose);
 			}
 			else if (verbose) {
 				std::cerr << SEPARATOR;
 			}
 		} else if (input_arg.isSet()) {
 			const std::string& input = input_arg.getValue();
-			convert_and_print(vis, input, verbose);
+			convert_and_print(vis, input, create_document, verbose);
+		}
+
+		if (create_document) {
+			if (verbose) {
+				std::cerr << "Footer:\n\n";
+			}
+			std::cout << talktex_footer();
+			if (verbose) {
+				std::cerr << SEPARATOR;
+			}
 		}
 
 	} catch (TCLAP::ArgException& e) {
