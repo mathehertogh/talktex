@@ -4,15 +4,13 @@
 #include "grammar.h"
 #include "syntax_tree.h"
 #include "syntax_visitor.h"
-#include "aecpp.h"
+#include "aec_styles.h"
 #include "avds/tree/tree_output.h"
 #include "latex_generation.h"
 
 #include <tclap/CmdLine.h>
 
 const std::string SEPARATOR = "\n" + std::string(100, '=') + "\n\n";
-const auto STYLE_INPUT = aec::bold + aec::green;
-const auto STYLE_ERROR = aec::bold + aec::red;
 
 const char* tests[] = {
 	"b", "calligraphic b", "b tilde", "bold b hat", "capital a", "bold capital a hat",
@@ -46,7 +44,7 @@ int main(int argc, char** argv) {
 		if (testSwitch.isSet()) {
 			for (const char* test : tests) {
 				if (verbose)
-					std::cerr << SEPARATOR << "Input: " << STYLE_INPUT << test << aec::reset << "\n";
+					std::cerr << SEPARATOR << "Input: " << aec_style::input << test << aec::reset << "\n";
 				grammar::generate_from_string(test, vis);
 				if (verbose)
 					std::cerr << "LaTeX: ";
@@ -55,7 +53,7 @@ int main(int argc, char** argv) {
 		} else if (inputFilenameArg.isSet()) {
 			const std::string& inputFilePath = inputFilenameArg.getValue();
 			if (verbose)
-				std::cerr << SEPARATOR << "File: " << STYLE_INPUT << inputFilePath << aec::reset << "\n";
+				std::cerr << SEPARATOR << "File: " << aec_style::input << inputFilePath << aec::reset << "\n";
 			grammar::generate_from_file(inputFilePath, vis);
 			if (verbose)
 				std::cerr << "LaTeX: ";
@@ -63,7 +61,7 @@ int main(int argc, char** argv) {
 		} else if (inputArg.isSet()) {
 			const std::string& input = inputArg.getValue();
 			if (verbose)
-				std::cerr << SEPARATOR << "Input: " << STYLE_INPUT << input << aec::reset << "\n";
+				std::cerr << SEPARATOR << "Input: " << aec_style::input << input << aec::reset << "\n";
 			grammar::generate_from_string(input, vis);
 			if (verbose)
 				std::cerr << "LaTeX: ";
@@ -74,7 +72,7 @@ int main(int argc, char** argv) {
 			std::cerr << SEPARATOR;
 
 	} catch (TCLAP::ArgException& e) {
-		std::cerr << STYLE_ERROR << "command-line error: " << aec::reset << e.error() << " for arg " << e.argId() << std::endl;
+		std::cerr << aec_style::error << "command-line error: " << aec::reset << e.error() << " for arg " << e.argId() << std::endl;
 		return 1;
 	}
 
