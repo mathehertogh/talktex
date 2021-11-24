@@ -60,7 +60,7 @@ class Parser:
     def parse(self):
       print(self.string.get())
       latex = conv(c_char_p(self.string.get().encode('utf-8'))).decode('utf-8')
-      print(latex)
+      print(latex);
       
     def clear(self):
       self.token_string.clear()
@@ -222,6 +222,20 @@ def main(ARGS):
         logging.info("ARGS.scorer: %s", ARGS.scorer)
         model.enableExternalScorer(ARGS.scorer)
 
+    # Add hotwords to deepspeech model (if applicable)
+    if ARGS.vocabulary is not None:
+      filename = ARGS.vocabulary
+      boost = ARGS.boost
+      
+      vocabfile = open(filename, 'r')
+      lines = vocabfile.readlines()
+      for line in lines:
+        word = line.strip()
+        print("Adding hotword " + word + " with boost " + str(boost))
+        #every line contains a single word (and is ignored otherwise)
+        model.addHotWord(word, boost)
+      vocabfile.close()
+        
     # Start audio with VAD
     vad_audio = VADAudio(aggressiveness=ARGS.vad_aggressiveness,
                          device=ARGS.device,
@@ -262,7 +276,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description="Stream from microphone to DeepSpeech using VAD")
 
-    parser.add_argument('-v', '--vad_aggressiveness', type=int, default=3,
+    parser.add_argument('-a', '--vad_aggressiveness', type=int, default=3,
                         help="Set aggressiveness of VAD: an integer between 0 and 3, 0 being the least aggressive about filtering out non-speech, 3 the most aggressive. Default: 3")
     parser.add_argument('--nospinner', action='store_true',
                         help="Disable spinner")
@@ -281,6 +295,10 @@ if __name__ == '__main__':
                         help=f"Input device sample rate. Default: {DEFAULT_SAMPLE_RATE}. Your device may require 44100.")
     parser.add_argument('-t', '--threshold', type=int, default=DEFAULT_BREAK_THRESHOLD,
                                             help=f"The threshold that determines whether a silence in speech is a space or an actual break. Default: {DEFAULT_BREAK_THRESHOLD}.")
+    parser.add_argument('-v', '--vocabulary',
+                        help="Path to a vocabulary file (containing all possible words in the grammar")
+    parser.add_argument('-b', '--boost', type=float, default=1.0,
+                        help="Boost to give to hotwords in vocabulary file (if provided)")
     ARGS = parser.parse_args()
     if ARGS.savewav: os.makedirs(ARGS.savewav, exist_ok=True)
     main(ARGS)
