@@ -12,7 +12,7 @@ from scipy import signal
 logging.basicConfig(level=20)
 
 class TokenString:
-    def __init(self):
+    def __init__(self):
         self.string_content = ""
         
     def append(self, text):
@@ -32,23 +32,28 @@ class Parser:
       
     def add_tokens(self, metadata):
         word = ""
-        token = metadata[0].tokens()
-        last_token_space = false
+        transcripts = metadata.transcripts
+        transcript = transcripts[0]
+        tokens = transcript.tokens
+        last_token_space = False
         last_token_time=0
         
         #Process the list of tokens
         for token in tokens:
-            if token.text() == ' ':
-                last_token_space = true
-                last_token_time = token.time()
-            if last_token_space == true:
-                if (last_token_time-token.time()) > self.break_threshold:
-                    string.append(self.break_token)
-                last_token_space = false
-            string.append(token.text())
-          
+            if token.text == ' ':
+                last_token_space = True
+                last_token_time = token.start_time
+            if last_token_space == True:
+                if (last_token_time-token.start_time) > self.break_threshold:
+                    self.string.append(self.break_token)
+                last_token_space = False
+            self.string.append(token.text)
+    
+    def finalize(self):
+        self.string.append(" end ")
+      
     def parse(self):
-      print(string.get())
+      print(self.string.get())
       
     def clear(self):
       self.token_string.clear()
@@ -178,7 +183,7 @@ class VADAudio(Audio):
             if not triggered:
                 ring_buffer.append((frame, is_speech))
                 num_voiced = len([f for f, speech in ring_buffer if speech])
-                if num_voiced > ratio * ring_buffer.maxlen:
+                if num_voiced > (ratio * ring_buffer.maxlen)/4:
                     triggered = True
                     for f, s in ring_buffer:
                         yield f
@@ -216,7 +221,7 @@ def main(ARGS):
                          input_rate=ARGS.rate,
                          file=ARGS.file)
     print("Listening (ctrl-C to exit)...")
-    frames = vad_audio.vad_collector()
+    frames = vad_audio.vad_collector(padding_ms=2000, ratio=0.8)
 
     # Stream from microphone to DeepSpeech using VAD
     spinner = None
@@ -236,10 +241,10 @@ def main(ARGS):
             if ARGS.savewav:
                 vad_audio.write_wav(os.path.join(ARGS.savewav, datetime.now().strftime("savewav_%Y-%m-%d_%H-%M-%S_%f.wav")), wav_data)
                 wav_data = bytearray()
-            text = stream_context.finishStreamWithMetadata()
-            print("Recognized: %s" % text)
-            #parser.add_tokens(text)
-            parser.finalize() #add end token
+            metadata = stream_context.finishStreamWithMetadata()
+            #print("Recognized: %s" % metadata)
+            parser.add_tokens(metadata)
+            #parser.finalize() #add end token
             parser.parse()
             stream_context = model.createStream()
 
