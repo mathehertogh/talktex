@@ -14,3 +14,11 @@ libgrammar_exe = executable(
 	include_directories: inc,
 	install: true
 )
+
+shared_library(
+	'compiler_latex_generator', 
+	'src/cpp/entrypoint/main.cpp', 
+	dependencies: libgrammar_depends + [tclap.get_variable('tclap_dep'), libgrammar_dep],
+	include_directories: inc,
+	install: true
+)

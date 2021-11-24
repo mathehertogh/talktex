@@ -8,8 +8,13 @@ import wave
 import webrtcvad
 from halo import Halo
 from scipy import signal
+from ctypes import * 
 
 logging.basicConfig(level=20)
+latgen = cdll.LoadLibrary("build/src/latex-generator/libcompiler_latex_generator.so")
+conv = latgen.convert_and_return
+conv.restype = c_char_p
+conv.argtypes = [c_char_p]
 
 class TokenString:
     def __init__(self):
@@ -54,6 +59,8 @@ class Parser:
       
     def parse(self):
       print(self.string.get())
+      latex = conv(c_char_p(self.string.get().encode('utf-8'))).decode('utf-8')
+      print(latex)
       
     def clear(self):
       self.token_string.clear()

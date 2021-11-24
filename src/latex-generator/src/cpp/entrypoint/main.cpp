@@ -49,6 +49,24 @@ void convert_and_print(
 	convert_and_print(visitor, ss, create_document, verbose);
 }
 
+
+extern "C" const char *convert_and_return(
+	char* input
+) {
+	Logger logger(std::cerr, std::cerr, std::cerr);
+	Syntax_visitor visitor(logger);
+	std::string str(input);
+	std::stringstream ss(str);
+	std::string line;
+	std::string output;
+	while (std::getline(ss, line)) {
+		grammar::generate_from_string(line, visitor);
+		auto latex = to_latex(visitor.syntax_tree.entrance());
+		output.append(to_display_style(latex));
+	}
+	return output.c_str();
+}
+
 int main(int argc, char** argv) {
 	TCLAP::CmdLine cmd("TalkTex compiler - LaTeX generator", ' ', "1.0");
 
