@@ -11,7 +11,7 @@ from scipy import signal
 from ctypes import * 
 
 logging.basicConfig(level=20)
-latgen = cdll.LoadLibrary("build/src/latex-generator/libcompiler_latex_generator.so")
+latgen = cdll.LoadLibrary("../build/src/latex-generator/libcompiler_latex_generator.so")
 conv = latgen.convert_and_return
 conv.restype = c_char_p
 conv.argtypes = [c_char_p]
@@ -30,7 +30,7 @@ class TokenString:
         self.string_content = ""
 
 class Parser:
-    def __init__(self, break_threshold=1000):
+    def __init__(self, break_threshold=1.0):
         self.string = TokenString()
         self.break_token = "end "
         self.break_threshold = break_threshold
@@ -45,17 +45,13 @@ class Parser:
         
         #Process the list of tokens
         for token in tokens:
-            if token.text == ' ':
-                last_token_space = True
-                last_token_time = token.start_time
-            if last_token_space == True:
-                if (last_token_time-token.start_time) > self.break_threshold:
-                    self.string.append(self.break_token)
-                last_token_space = False
             self.string.append(token.text)
-    
+            if token.text == ' ':
+                if (token.start_time-last_token_time) > self.break_threshold:
+                    self.string.append(self.break_token)
+            last_token_time = token.start_time
     def finalize(self):
-        self.string.append(" end ")
+        self.string.append(" ")
       
     def parse(self):
       print(self.string.get())
@@ -190,7 +186,7 @@ class VADAudio(Audio):
             if not triggered:
                 ring_buffer.append((frame, is_speech))
                 num_voiced = len([f for f, speech in ring_buffer if speech])
-                if num_voiced > (ratio * ring_buffer.maxlen)/4:
+                if num_voiced > (ratio * ring_buffer.maxlen)/8:
                     triggered = True
                     for f, s in ring_buffer:
                         yield f
@@ -242,7 +238,7 @@ def main(ARGS):
                          input_rate=ARGS.rate,
                          file=ARGS.file)
     print("Listening (ctrl-C to exit)...")
-    frames = vad_audio.vad_collector(padding_ms=2000, ratio=0.8)
+    frames = vad_audio.vad_collector(padding_ms=4000, ratio=0.8)
 
     # Stream from microphone to DeepSpeech using VAD
     spinner = None
@@ -263,7 +259,6 @@ def main(ARGS):
                 vad_audio.write_wav(os.path.join(ARGS.savewav, datetime.now().strftime("savewav_%Y-%m-%d_%H-%M-%S_%f.wav")), wav_data)
                 wav_data = bytearray()
             metadata = stream_context.finishStreamWithMetadata()
-            #print("Recognized: %s" % metadata)
             parser.add_tokens(metadata)
             #parser.finalize() #add end token
             parser.parse()
@@ -271,7 +266,7 @@ def main(ARGS):
 
 if __name__ == '__main__':
     DEFAULT_SAMPLE_RATE = 16000
-    DEFAULT_BREAK_THRESHOLD = 1000
+    DEFAULT_BREAK_THRESHOLD = 1
 
     import argparse
     parser = argparse.ArgumentParser(description="Stream from microphone to DeepSpeech using VAD")
