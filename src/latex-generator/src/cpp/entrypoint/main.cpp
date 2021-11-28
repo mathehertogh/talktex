@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include <tclap/CmdLine.h>
+
 #include "grammar.h"
 #include "syntax_tree.h"
 #include "syntax_visitor.h"
@@ -8,7 +10,57 @@
 #include "latex_generation.h"
 #include "io_util.h"
 
-#include <tclap/CmdLine.h>
+// =================================================================================================
+// C library API
+// =================================================================================================
+
+/**
+ * Converts one or more lines of running text to corresponding LaTeX code, which can be used in
+ * LaTeX text mode. One output line is generated for each input line.
+ *
+ * The running text should be given in [input]. The resulting LaTeX code is stored in *[output].
+ * The pointers [input], *[output] and [output] should be freed by the caller.
+ *
+ * Returns false if one of the lines could not be fully parsed, and true otherwise.
+ * The partial texifications of any erronous input lines, and the texifications of the lines after
+ * any erronous input lines, are still included in the output.
+ */
+extern "C" bool texify(char* input, char** output) {
+	bool success = true;
+	Logger logger(std::cerr, std::cerr, std::cerr);
+	Syntax_visitor visitor(logger);
+	std::stringstream ss(input);
+	std::string line;
+	std::string output_string;
+	while (std::getline(ss, line)) {
+		auto code = grammar::generate_from_string(line, visitor);
+		if (code != 0) success = false;
+		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
+		output_string += generation::to_display_style(latex) + "\n";
+	}
+	*output = strdup(output_string.c_str());
+	return success;
+}
+
+/**
+ * Returns the TalkTeX LaTeX header, including \begin{document}.
+ * The returned string should be freed by the caller.
+ */
+extern "C" const char* talktex_header() {
+	return strdup(generation::talktex_header().c_str());
+}
+
+/**
+ * Returns the TalkTeX LaTeX footer, including \end{document}.
+ * The returned string should be freed by the caller.
+ */
+extern "C" const char* talktex_footer() {
+	return strdup(generation::talktex_footer().c_str());
+}
+
+// =================================================================================================
+// Command-line interface
+// =================================================================================================
 
 const std::string SEPARATOR = "\n" + std::string(100, '=') + "\n\n";
 
@@ -47,24 +99,6 @@ void convert_and_print(
 ) {
 	std::stringstream ss(str);
 	convert_and_print(visitor, ss, create_document, verbose);
-}
-
-
-extern "C" const char *convert_and_return(
-	char* input
-) {
-	Logger logger(std::cerr, std::cerr, std::cerr);
-	Syntax_visitor visitor(logger);
-	std::string str(input);
-	std::stringstream ss(str);
-	std::string line;
-	std::string output;
-	while (std::getline(ss, line)) {
-		grammar::generate_from_string(line, visitor);
-		auto latex = to_latex(visitor.syntax_tree.entrance());
-		output.append(to_display_style(latex));
-	}
-	return output.c_str();
 }
 
 int main(int argc, char** argv) {

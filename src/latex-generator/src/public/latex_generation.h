@@ -14,10 +14,10 @@ std::string to_latex(Syntax_tree::const_traverser t);
  */
 std::string to_display_style(const std::string& latex_expression);
 
-/** Returns the TalkTeX LaTeX header, up to and including \begin{document} */
+/** Returns the TalkTeX LaTeX header, including \begin{document} */
 std::string talktex_header();
 
-/** Returns the TalkTeX LaTeX footer, starting at \end{document} */
+/** Returns the TalkTeX LaTeX footer, including \end{document} */
 std::string talktex_footer();
 
 } // namespace generation
