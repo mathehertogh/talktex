@@ -74,17 +74,18 @@ const char* tests[] = {
 	"sum from x equal zero to infinity x power two", "open parenthesis x plus two close parenthesis"
 };
 
-void convert_and_print(
+bool convert_and_print(
 	Syntax_visitor& visitor, std::istream& is, bool create_document, bool verbose
 ) {
+	bool success = true;
 	std::string line;
 	while (std::getline(is, line)) {
-		if (verbose) {
-			std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n"
-			          << "LaTeX: ";
-		}
+		if (verbose) std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n";
 
-		grammar::generate_from_string(line, visitor);
+		auto code = grammar::generate_from_string(line, visitor);
+		if (code != 0) success = false;
+
+		if (verbose) std::cerr << "LaTeX: ";
 		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
 		std::cout << (create_document ? generation::to_display_style(latex) : latex ) << "\n";
 
@@ -92,16 +93,19 @@ void convert_and_print(
 			std::cerr << SEPARATOR;
 		}
 	}
+	return success;
 }
 
-void convert_and_print(
+bool  convert_and_print(
 	Syntax_visitor& visitor, const std::string& str, bool create_document, bool verbose
 ) {
 	std::stringstream ss(str);
-	convert_and_print(visitor, ss, create_document, verbose);
+	return convert_and_print(visitor, ss, create_document, verbose);
 }
 
 int main(int argc, char** argv) {
+	bool success = true;
+
 	TCLAP::CmdLine cmd("TalkTex compiler - LaTeX generator", ' ', "1.0");
 
 	try {
@@ -137,20 +141,20 @@ int main(int argc, char** argv) {
 
 		if (test_switch.isSet()) {
 			for (const char* test : tests) {
-				convert_and_print(vis, test, create_document, verbose);
+				if (!convert_and_print(vis, test, create_document, verbose)) success = false;
 			}
 		} else if (input_file_path_arg.isSet()) {
 			const std::string& path = input_file_path_arg.getValue();
 			std::ifstream file;
 			if (try_open_input_file(path, file)) {
-				convert_and_print(vis, file, create_document, verbose);
+				if (!convert_and_print(vis, file, create_document, verbose)) success = false;
 			}
 			else if (verbose) {
 				std::cerr << SEPARATOR;
 			}
 		} else if (input_arg.isSet()) {
 			const std::string& input = input_arg.getValue();
-			convert_and_print(vis, input, create_document, verbose);
+			if (!convert_and_print(vis, input, create_document, verbose)) success = false;
 		}
 
 		if (create_document) {
@@ -169,5 +173,5 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	return 0;
+	return (success ? 0 : 1);
 }
