@@ -46,7 +46,7 @@ extern "C" bool texify(char* input, char** output) {
  * Returns the TalkTeX LaTeX header, including \begin{document}.
  * The returned string should be freed by the caller.
  */
-extern "C" const char* talktex_header() {
+extern "C" char* talktex_header() {
 	return strdup(generation::talktex_header().c_str());
 }
 
@@ -54,8 +54,13 @@ extern "C" const char* talktex_header() {
  * Returns the TalkTeX LaTeX footer, including \end{document}.
  * The returned string should be freed by the caller.
  */
-extern "C" const char* talktex_footer() {
+extern "C" char* talktex_footer() {
 	return strdup(generation::talktex_footer().c_str());
+}
+
+/** Frees [str] */
+extern "C" void free_string(char* str) {
+	free(str);
 }
 
 // =================================================================================================
