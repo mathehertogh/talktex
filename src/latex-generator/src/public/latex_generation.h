@@ -3,6 +3,8 @@
 #include <string>
 #include "syntax_tree.h"
 
+namespace generation {
+
 /** Returns the LaTeX math code needed to render the expression tree that [t] points to */
 std::string to_latex(Syntax_tree::const_traverser t);
 
@@ -17,3 +19,5 @@ std::string talktex_header();
 
 /** Returns the TalkTeX LaTeX footer, starting at \end{document} */
 std::string talktex_footer();
+
+} // namespace generation

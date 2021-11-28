@@ -33,8 +33,8 @@ void convert_and_print(
 		}
 
 		grammar::generate_from_string(line, visitor);
-		auto latex = to_latex(visitor.syntax_tree.entrance());
-		std::cout << (create_document ? to_display_style(latex) : latex ) << "\n";
+		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
+		std::cout << (create_document ? generation::to_display_style(latex) : latex ) << "\n";
 
 		if (verbose) {
 			std::cerr << SEPARATOR;
