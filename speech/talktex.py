@@ -8,58 +8,10 @@ import wave
 import webrtcvad
 from halo import Halo
 from scipy import signal
-from ctypes import * 
 
+from parser import Parser
+#from compiler import Compiler
 logging.basicConfig(level=20)
-latgen = cdll.LoadLibrary("../build/src/latex-generator/libcompiler_latex_generator.so")
-conv = latgen.convert_and_return
-conv.restype = c_char_p
-conv.argtypes = [c_char_p]
-
-class TokenString:
-    def __init__(self):
-        self.string_content = ""
-        
-    def append(self, text):
-        self.string_content = (self.string_content + text)
-    
-    def get(self):
-        return self.string_content
-           
-    def clear(self):
-        self.string_content = ""
-
-class Parser:
-    def __init__(self, break_threshold=1.0):
-        self.string = TokenString()
-        self.break_token = "end "
-        self.break_threshold = break_threshold
-      
-    def add_tokens(self, metadata):
-        word = ""
-        transcripts = metadata.transcripts
-        transcript = transcripts[0]
-        tokens = transcript.tokens
-        last_token_space = False
-        last_token_time=0
-        
-        #Process the list of tokens
-        for token in tokens:
-            self.string.append(token.text)
-            if token.text == ' ':
-                if (token.start_time-last_token_time) > self.break_threshold:
-                    self.string.append(self.break_token)
-            last_token_time = token.start_time
-    def finalize(self):
-        self.string.append(" ")
-      
-    def parse(self):
-      print(self.string.get())
-      latex = conv(c_char_p(self.string.get().encode('utf-8'))).decode('utf-8')
-      print(latex);
-      
-    def clear(self):
-      self.token_string.clear()
 
 class Audio(object):
     """Streams raw audio from microphone. Data is received in a separate thread, and stored in a buffer, to be read from."""
@@ -271,8 +223,8 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description="Stream from microphone to DeepSpeech using VAD")
 
-    parser.add_argument('-a', '--vad_aggressiveness', type=int, default=3,
-                        help="Set aggressiveness of VAD: an integer between 0 and 3, 0 being the least aggressive about filtering out non-speech, 3 the most aggressive. Default: 3")
+    parser.add_argument('-a', '--vad_aggressiveness', type=int, default=0,
+                        help="Set aggressiveness of VAD: an integer between 0 and 3, 0 being the least aggressive about filtering out non-speech, 3 the most aggressive. Default: 0")
     parser.add_argument('--nospinner', action='store_true',
                         help="Disable spinner")
     parser.add_argument('-w', '--savewav',
@@ -294,6 +246,8 @@ if __name__ == '__main__':
                         help="Path to a vocabulary file (containing all possible words in the grammar")
     parser.add_argument('-b', '--boost', type=float, default=1.0,
                         help="Boost to give to hotwords in vocabulary file (if provided)")
+    parser.add_argument('--auto-parse', action='store_true',
+                        help="Automatically update PDF file after each utterance") 
     ARGS = parser.parse_args()
     if ARGS.savewav: os.makedirs(ARGS.savewav, exist_ok=True)
     main(ARGS)
