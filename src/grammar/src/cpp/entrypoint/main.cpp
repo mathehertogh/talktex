@@ -2,6 +2,8 @@
 #include <string>
 #include <sstream>
 
+#include <tclap/CmdLine.h>
+
 #include "avds/tree/tree_output.h"
 #include "grammar.h"
 #include "syntax_tree.h"
@@ -9,7 +11,9 @@
 #include "aec_styles.h"
 #include "io_util.h"
 
-#include <tclap/CmdLine.h>
+// =================================================================================================
+// Command-line interface
+// =================================================================================================
 
 const std::string SEPARATOR = "\n" + std::string(140, '=') + "\n\n";
 
@@ -23,25 +27,31 @@ const char* tests[] = {
 	"sum from x equal zero to infinity x power two", "open parenthesis x plus two close parenthesis"
 };
 
-void parse_and_print(Syntax_visitor& visitor, std::istream& is) {
+bool parse_and_print(Syntax_visitor& visitor, std::istream& is) {
+	bool success = true;
 	std::string line;
 	while (std::getline(is, line)) {
-		std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n"
-		          << "Parse tree:\n\n";
+		std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n";
 
-		grammar::generate_from_string(line, visitor);
+		auto code = grammar::generate_from_string(line, visitor);
+		if (code != 0) success = false;
+
+		std::cerr << "Parse tree:\n\n";
 		avds::tree::print_horizontal(std::cout, visitor.syntax_tree.entrance());
 
 		std::cerr << SEPARATOR;
 	}
+	return success;
 }
 
-void parse_and_print(Syntax_visitor& visitor, const std::string& str) {
+bool parse_and_print(Syntax_visitor& visitor, const std::string& str) {
 	std::stringstream ss(str);
-	parse_and_print(visitor, ss);
+	return parse_and_print(visitor, ss);
 }
 
 int main(int argc, char** argv) {
+	bool success = true;
+
 	TCLAP::CmdLine cmd("TalkTex compiler - Grammar Parser", ' ', "1.0");
 
 	try {
@@ -61,21 +71,21 @@ int main(int argc, char** argv) {
 
 		if (test_switch.isSet()) {
 			for (const char* test : tests) {
-				parse_and_print(vis, test);
+				if (!parse_and_print(vis, test)) success = false;
 			}
 		}
 		else if (input_file_path_arg.isSet()) {
 			const std::string& path = input_file_path_arg.getValue();
 			std::ifstream file;
 			if (try_open_input_file(path, file)) {
-				parse_and_print(vis, file);
+				if (!parse_and_print(vis, file)) success = false;
 			}
 			else {
 				std::cerr << SEPARATOR;
 			}
 		} else if (input_arg.isSet()) {
 			const std::string& input = input_arg.getValue();
-			parse_and_print(vis, input);
+			if (!parse_and_print(vis, input)) success = false;
 		}
 
 	} catch (TCLAP::ArgException& e) {
@@ -86,5 +96,5 @@ int main(int argc, char** argv) {
 
 	std::cerr << "You might want to make your terminal fullscreen :)\n";
 
-	return 0;
+	return (success ? 0 : 1);
 }

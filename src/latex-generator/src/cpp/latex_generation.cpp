@@ -6,6 +6,8 @@
 // Helper functions and constants
 //==================================================================================================
 
+namespace {
+
 std::string command(const std::string& name) {
 	return "\\" + name;
 }
@@ -133,9 +135,13 @@ std::string texify_digit(const std::string& str) {
 	return ERROR_TARGET;
 }
 
+} // unnamed namespace
+
 //==================================================================================================
 // Public function implementations
 //==================================================================================================
+
+namespace generation {
 
 std::string to_latex(Syntax_tree::const_traverser t) {
 	/// Shorthand to convert a child subtree to latex, since it's used so much.
@@ -244,3 +250,5 @@ R"latex(
 )latex";
 	return footer;
 }
+
+} // namespace generation

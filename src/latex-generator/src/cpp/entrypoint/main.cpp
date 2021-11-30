@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include <tclap/CmdLine.h>
+
 #include "grammar.h"
 #include "syntax_tree.h"
 #include "syntax_visitor.h"
@@ -8,7 +10,62 @@
 #include "latex_generation.h"
 #include "io_util.h"
 
-#include <tclap/CmdLine.h>
+// =================================================================================================
+// C library API
+// =================================================================================================
+
+/**
+ * Converts one or more lines of running text to corresponding LaTeX code, which can be used in
+ * LaTeX text mode. One output line is generated for each input line.
+ *
+ * The running text should be given in [input]. The resulting LaTeX code is stored in *[output].
+ * The pointers [input], *[output] and [output] should be freed by the caller.
+ *
+ * Returns false if one of the lines could not be fully parsed, and true otherwise.
+ * The partial texifications of any erronous input lines, and the texifications of the lines after
+ * any erronous input lines, are still included in the output.
+ */
+extern "C" bool texify(char* input, char** output) {
+	bool success = true;
+	Logger logger(std::cerr, std::cerr, std::cerr);
+	Syntax_visitor visitor(logger);
+	std::stringstream ss(input);
+	std::string line;
+	std::string output_string;
+	while (std::getline(ss, line)) {
+		auto code = grammar::generate_from_string(line, visitor);
+		if (code != 0) success = false;
+		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
+		output_string += generation::to_display_style(latex) + "\n";
+	}
+	*output = strdup(output_string.c_str());
+	return success;
+}
+
+/**
+ * Returns the TalkTeX LaTeX header, including \begin{document}.
+ * The returned string should be freed by the caller.
+ */
+extern "C" char* talktex_header() {
+	return strdup(generation::talktex_header().c_str());
+}
+
+/**
+ * Returns the TalkTeX LaTeX footer, including \end{document}.
+ * The returned string should be freed by the caller.
+ */
+extern "C" char* talktex_footer() {
+	return strdup(generation::talktex_footer().c_str());
+}
+
+/** Frees [str] */
+extern "C" void free_string(char* str) {
+	free(str);
+}
+
+// =================================================================================================
+// Command-line interface
+// =================================================================================================
 
 const std::string SEPARATOR = "\n" + std::string(100, '=') + "\n\n";
 
@@ -22,52 +79,38 @@ const char* tests[] = {
 	"sum from x equal zero to infinity x power two", "open parenthesis x plus two close parenthesis"
 };
 
-void convert_and_print(
+bool convert_and_print(
 	Syntax_visitor& visitor, std::istream& is, bool create_document, bool verbose
 ) {
+	bool success = true;
 	std::string line;
 	while (std::getline(is, line)) {
-		if (verbose) {
-			std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n"
-			          << "LaTeX: ";
-		}
+		if (verbose) std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n";
 
-		grammar::generate_from_string(line, visitor);
-		auto latex = to_latex(visitor.syntax_tree.entrance());
-		std::cout << (create_document ? to_display_style(latex) : latex ) << "\n";
+		auto code = grammar::generate_from_string(line, visitor);
+		if (code != 0) success = false;
+
+		if (verbose) std::cerr << "LaTeX: ";
+		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
+		std::cout << (create_document ? generation::to_display_style(latex) : latex ) << "\n";
 
 		if (verbose) {
 			std::cerr << SEPARATOR;
 		}
 	}
+	return success;
 }
 
-void convert_and_print(
+bool  convert_and_print(
 	Syntax_visitor& visitor, const std::string& str, bool create_document, bool verbose
 ) {
 	std::stringstream ss(str);
-	convert_and_print(visitor, ss, create_document, verbose);
-}
-
-
-extern "C" const char *convert_and_return(
-	char* input
-) {
-	Logger logger(std::cerr, std::cerr, std::cerr);
-	Syntax_visitor visitor(logger);
-	std::string str(input);
-	std::stringstream ss(str);
-	std::string line;
-	std::string output;
-	while (std::getline(ss, line)) {
-		grammar::generate_from_string(line, visitor);
-		auto latex = to_latex(visitor.syntax_tree.entrance());
-		output.append(to_display_style(latex));
-	}
-	return output.c_str();
+	return convert_and_print(visitor, ss, create_document, verbose);
 }
 
 int main(int argc, char** argv) {
+	bool success = true;
+
 	TCLAP::CmdLine cmd("TalkTex compiler - LaTeX generator", ' ', "1.0");
 
 	try {
@@ -103,20 +146,20 @@ int main(int argc, char** argv) {
 
 		if (test_switch.isSet()) {
 			for (const char* test : tests) {
-				convert_and_print(vis, test, create_document, verbose);
+				if (!convert_and_print(vis, test, create_document, verbose)) success = false;
 			}
 		} else if (input_file_path_arg.isSet()) {
 			const std::string& path = input_file_path_arg.getValue();
 			std::ifstream file;
 			if (try_open_input_file(path, file)) {
-				convert_and_print(vis, file, create_document, verbose);
+				if (!convert_and_print(vis, file, create_document, verbose)) success = false;
 			}
 			else if (verbose) {
 				std::cerr << SEPARATOR;
 			}
 		} else if (input_arg.isSet()) {
 			const std::string& input = input_arg.getValue();
-			convert_and_print(vis, input, create_document, verbose);
+			if (!convert_and_print(vis, input, create_document, verbose)) success = false;
 		}
 
 		if (create_document) {
@@ -135,5 +178,5 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	return 0;
+	return (success ? 0 : 1);
 }
