@@ -69,7 +69,7 @@ greek  			"alpha"|"beta"|"gamma"|"delta"|"epsilon"|"zeta"|"eta"|"theta"|"iota"|"
 "power"			{ return B_POWER; }
 "divided by" 	{ return B_DIV; }
 "divides"		{ return B_MID; }
-"equal"			{ return B_EQ; }
+"equals"		{ return B_EQ; }
 "isomorphic"	{ return B_ISO; }
 "less"			{ return B_LT; }
 "greater"		{ return B_GT; }
