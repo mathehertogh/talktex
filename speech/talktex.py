@@ -156,11 +156,11 @@ class VADAudio(Audio):
 def main(ARGS):
 	# Create parser object
 	parser = Parser(ARGS.threshold)
-	
+
 	# Create compiler object
 	compiler = Compiler(ARGS.output)
 	compiler.initialize()
-	
+
 	# Load DeepSpeech model
 	if os.path.isdir(ARGS.model):
 		model_dir = ARGS.model
@@ -173,14 +173,14 @@ def main(ARGS):
 	if ARGS.scorer:
 		logging.info("ARGS.scorer: %s", ARGS.scorer)
 		model.enableExternalScorer(ARGS.scorer)
-		
+
 	# Start audio with VAD
 	vad_audio = VADAudio(aggressiveness=ARGS.vad_aggressiveness,
 						 device=ARGS.device,
 						 input_rate=ARGS.rate,
 						 file=ARGS.file)
 	print("Listening (ctrl-C to exit)...")
-	frames = vad_audio.vad_collector(padding_ms=3000, ratio=0.8)
+	frames = vad_audio.vad_collector(padding_ms=3000, ratio=0.6)
 
 	# Stream from microphone to DeepSpeech using VAD
 	spinner = None
@@ -236,7 +236,7 @@ if __name__ == '__main__':
 	parser.add_argument('--autocompile', action='store_true',
 						help="Automatically update PDF file after each utterance")
 	parser.add_argument('-o', '--output', default="latex-output/talktex",
-	                    help="The output destination for the LaTeX and PDF files") 
+	                    help="The output destination for the LaTeX and PDF files")
 	ARGS = parser.parse_args()
 	if ARGS.savewav: os.makedirs(ARGS.savewav, exist_ok=True)
 	main(ARGS)
