@@ -36,7 +36,10 @@ extern "C" bool texify(const char* input, char* output, size_t output_size) {
 	while (std::getline(ss, line)) {
 		if (line == "") continue; // Ignore empty lines
 		auto code = grammar::generate_from_string(line, visitor);
-		if (code != 0) success = false;
+		if (code != 0) {
+			success = false;
+			continue; // ignore invalid lines
+		}
 		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
 		output_string += generation::to_display_style(latex) + "\n";
 	}
