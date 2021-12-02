@@ -51,7 +51,7 @@ extern "C" bool texify(const char* input, char* output, size_t output_size) {
  * less than or equal to [buf_size].
  * Returns true if the header was succesfully written to [buf], and false otherwise.
  */
-extern "C" int talktex_header(char *buf, size_t buf_size) {
+extern "C" bool talktex_header(char *buf, size_t buf_size) {
 	auto header = generation::talktex_header();
 	if (header.size() + 1 > buf_size) {
 		return false;
@@ -65,7 +65,7 @@ extern "C" int talktex_header(char *buf, size_t buf_size) {
  * less than or equal to [buf_size].
  * Returns true if the footer was succesfully written to [buf], and false otherwise.
  */
-extern "C" int talktex_footer(char* buf, size_t buf_size) {
+extern "C" bool talktex_footer(char* buf, size_t buf_size) {
 	auto footer = generation::talktex_footer();
 	if (footer.size() + 1 > buf_size) {
 		return false;
