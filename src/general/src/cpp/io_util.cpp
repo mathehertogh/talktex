@@ -3,7 +3,7 @@
 #include <iostream>
 #include "aec_styles.h"
 
-void print_open_file_error_message(const std::string& path) {
+static void print_open_file_error_message(const std::string& path) {
 	std::cerr << aec_style::error << "Error:" << aec::reset << " Could not open "
 	          << aec_style::filename << path << aec::reset << "\n";
 }

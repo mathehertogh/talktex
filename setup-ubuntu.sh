@@ -8,8 +8,8 @@ set -e # Quit on error
 cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" >/dev/null
 
 
-sudo apt install flex bison
-pip3 install meson ninja --user
+sudo apt install flex bison libalsa-dev portaudio19-dev
+pip3 install meson ninja deepspeech pyaudio webcrtvad halo --user
 
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"

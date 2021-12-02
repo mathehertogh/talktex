@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include <tclap/CmdLine.h>
+
 #include "grammar.h"
 #include "syntax_tree.h"
 #include "syntax_visitor.h"
@@ -8,7 +10,77 @@
 #include "latex_generation.h"
 #include "io_util.h"
 
-#include <tclap/CmdLine.h>
+#define LATEX_MAX_SIZE 1048576 //1MB should do for now right?
+// =================================================================================================
+// C library API
+// =================================================================================================
+
+/**
+ * Converts one or more lines of running text to corresponding LaTeX code, which can be used in
+ * LaTeX text mode. One output line is generated for each input line.
+ *
+ * The running text should be given in [input]. The resulting LaTeX code is stored in *[output].
+ * The pointers [input], *[output] and [output] should be freed by the caller.
+ *
+ * Returns false if one of the lines could not be fully parsed, and true otherwise.
+ * The partial texifications of any erronous input lines, and the texifications of the lines after
+ * any erronous input lines, are still included in the output.
+ */
+extern "C" bool texify(char* input, char* output, size_t output_size) {
+	bool success = true;
+	Logger logger(std::cerr, std::cerr, std::cerr);
+	Syntax_visitor visitor(logger);
+	std::stringstream ss(input);
+	std::string line;
+	std::string output_string;
+	while (std::getline(ss, line)) {
+		auto code = grammar::generate_from_string(line, visitor);
+		if (code != 0) success = false;
+		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
+		output_string += generation::to_display_style(latex) + "\n";
+	}
+	if (output_string.size() > output_size) {
+		std::cerr << "Could not copy LaTeX output into buffer: overflow" << std::endl;
+		return false;
+	}
+	strcpy(output, output_string.c_str());
+	//*output = strdup(output_string.c_str());
+	return success;
+}
+
+/**
+ * Stores the TalkTeX LaTeX header, including \begin{document},
+ * into *buf. *buf should be allocated by caller.
+ */
+extern "C" int talktex_header(char *buf, size_t buf_size) {
+	char *header = strdup(generation::talktex_header().c_str()); 
+	if (sizeof(header) > buf_size) {
+		std::cerr << "Could not copy header into buffer: overlflow" << std::endl;
+		return false;
+	}
+	strcpy(buf, header);
+	free(header);
+	return true;
+}
+
+/**
+ * Stores the TalkTeX LaTeX footer, including \end{document},
+ * into *buf. *buf should be allocated by caller.
+ */
+extern "C" int talktex_footer(char *buf, size_t buf_size) {
+	char *footer = strdup(generation::talktex_footer().c_str());
+	if (sizeof(footer) > buf_size) {
+		std::cerr << "Could not copy footer into buffer: overflow" << std::endl;
+		return false;
+	}
+	strcpy(buf, footer);
+	free(footer);
+	return true;
+}
+
+// =================================================================================================
+// Command-line interface
+// =================================================================================================
 
 const std::string SEPARATOR = "\n" + std::string(100, '=') + "\n\n";
 
@@ -22,52 +94,38 @@ const char* tests[] = {
 	"sum from x equal zero to infinity x power two", "open parenthesis x plus two close parenthesis"
 };
 
-void convert_and_print(
+bool convert_and_print(
 	Syntax_visitor& visitor, std::istream& is, bool create_document, bool verbose
 ) {
+	bool success = true;
 	std::string line;
 	while (std::getline(is, line)) {
-		if (verbose) {
-			std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n"
-			          << "LaTeX: ";
-		}
+		if (verbose) std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n";
 
-		grammar::generate_from_string(line, visitor);
-		auto latex = to_latex(visitor.syntax_tree.entrance());
-		std::cout << (create_document ? to_display_style(latex) : latex ) << "\n";
+		auto code = grammar::generate_from_string(line, visitor);
+		if (code != 0) success = false;
+
+		if (verbose) std::cerr << "LaTeX: ";
+		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
+		std::cout << (create_document ? generation::to_display_style(latex) : latex ) << "\n";
 
 		if (verbose) {
 			std::cerr << SEPARATOR;
 		}
 	}
+	return success;
 }
 
-void convert_and_print(
+bool  convert_and_print(
 	Syntax_visitor& visitor, const std::string& str, bool create_document, bool verbose
 ) {
 	std::stringstream ss(str);
-	convert_and_print(visitor, ss, create_document, verbose);
-}
-
-
-extern "C" const char *convert_and_return(
-	char* input
-) {
-	Logger logger(std::cerr, std::cerr, std::cerr);
-	Syntax_visitor visitor(logger);
-	std::string str(input);
-	std::stringstream ss(str);
-	std::string line;
-	std::string output;
-	while (std::getline(ss, line)) {
-		grammar::generate_from_string(line, visitor);
-		auto latex = to_latex(visitor.syntax_tree.entrance());
-		output.append(to_display_style(latex));
-	}
-	return output.c_str();
+	return convert_and_print(visitor, ss, create_document, verbose);
 }
 
 int main(int argc, char** argv) {
+	bool success = true;
+
 	TCLAP::CmdLine cmd("TalkTex compiler - LaTeX generator", ' ', "1.0");
 
 	try {
@@ -87,6 +145,7 @@ int main(int argc, char** argv) {
 
 		bool create_document = create_document_switch.getValue();
 		bool verbose = verbose_switch.getValue();
+		char* temp_str = (char*)malloc(LATEX_MAX_SIZE*sizeof(char));
 
 		if (verbose)
 			std::cerr << SEPARATOR;
@@ -95,7 +154,8 @@ int main(int argc, char** argv) {
 			if (verbose) {
 				std::cerr << "Header:\n\n";
 			}
-			std::cout << talktex_header();
+			talktex_header(temp_str, LATEX_MAX_SIZE*sizeof(char));
+			std::cout << temp_str;
 			if (verbose) {
 				std::cerr << SEPARATOR;
 			}
@@ -103,37 +163,39 @@ int main(int argc, char** argv) {
 
 		if (test_switch.isSet()) {
 			for (const char* test : tests) {
-				convert_and_print(vis, test, create_document, verbose);
+				if (!convert_and_print(vis, test, create_document, verbose)) success = false;
 			}
 		} else if (input_file_path_arg.isSet()) {
 			const std::string& path = input_file_path_arg.getValue();
 			std::ifstream file;
 			if (try_open_input_file(path, file)) {
-				convert_and_print(vis, file, create_document, verbose);
+				if (!convert_and_print(vis, file, create_document, verbose)) success = false;
 			}
 			else if (verbose) {
 				std::cerr << SEPARATOR;
 			}
 		} else if (input_arg.isSet()) {
 			const std::string& input = input_arg.getValue();
-			convert_and_print(vis, input, create_document, verbose);
+			if (!convert_and_print(vis, input, create_document, verbose)) success = false;
 		}
 
 		if (create_document) {
 			if (verbose) {
 				std::cerr << "Footer:\n\n";
 			}
-			std::cout << talktex_footer();
+			talktex_footer(temp_str, LATEX_MAX_SIZE*sizeof(char));
+			std::cout << temp_str;
 			if (verbose) {
 				std::cerr << SEPARATOR;
 			}
 		}
+		free(temp_str);
 
 	} catch (TCLAP::ArgException& e) {
 		std::cerr << aec_style::error << "command-line error: " << aec::reset << e.error()
-		          << " for arg " << e.argId() << std::endl;
+				  << " for arg " << e.argId() << std::endl;
 		return 1;
 	}
 
-	return 0;
+	return (success ? 0 : 1);
 }
