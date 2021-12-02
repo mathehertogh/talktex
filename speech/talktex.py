@@ -203,9 +203,10 @@ def main(ARGS):
 			metadata = stream_context.finishStreamWithMetadata()
 			parser.add_tokens(metadata)
 			success, latex_string = parser.get_latex_string()
-			print(latex_string)
-			if ARGS.autocompile and success:
-				compiler.compile(parser.get_latex_doc())
+			if success:
+				print(latex_string)
+				if ARGS.autocompile and success:
+					compiler.compile(parser.get_latex_doc())
 			stream_context = model.createStream()
 
 if __name__ == '__main__':

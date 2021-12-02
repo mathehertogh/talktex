@@ -51,7 +51,7 @@ class Parser:
 			self.prev_output = self.current_output
 			return success, self.current_output
 		else:
-			print("ERROR: Input is not valid LaTeX. Input: " + self.current_string)
+			print("ERROR: Input is not valid LaTeX.\nINPUT:\n" + self.current_string)
 			self.current_string = self.prev_string
 			self.current_output = self.prev_output
 			return success, self.prev_output
