@@ -10,7 +10,6 @@
 #include "latex_generation.h"
 #include "io_util.h"
 
-#define LATEX_MAX_SIZE 1048576 //1MB should do for now right?
 // =================================================================================================
 // C library API
 // =================================================================================================
@@ -152,7 +151,6 @@ int main(int argc, char** argv) {
 
 		bool create_document = create_document_switch.getValue();
 		bool verbose = verbose_switch.getValue();
-		char* temp_str = (char*)malloc(LATEX_MAX_SIZE*sizeof(char));
 
 		if (verbose)
 			std::cerr << SEPARATOR;
@@ -161,8 +159,7 @@ int main(int argc, char** argv) {
 			if (verbose) {
 				std::cerr << "Header:\n\n";
 			}
-			talktex_header(temp_str, LATEX_MAX_SIZE*sizeof(char));
-			std::cout << temp_str;
+			std::cout << generation::talktex_header();
 			if (verbose) {
 				std::cerr << SEPARATOR;
 			}
@@ -190,13 +187,11 @@ int main(int argc, char** argv) {
 			if (verbose) {
 				std::cerr << "Footer:\n\n";
 			}
-			talktex_footer(temp_str, LATEX_MAX_SIZE*sizeof(char));
-			std::cout << temp_str;
+			std::cout << generation::talktex_footer();
 			if (verbose) {
 				std::cerr << SEPARATOR;
 			}
 		}
-		free(temp_str);
 
 	} catch (TCLAP::ArgException& e) {
 		std::cerr << aec_style::error << "command-line error: " << aec::reset << e.error()
