@@ -15,13 +15,15 @@ class TokenString:
 
 class Parser:
 	def __init__(self, break_threshold=1.0):
-		self.string = TokenString()
+		self.current_string = ""
+		self.current_output = ""
+		self.prev_string = ""
+		self.prev_output = ""
 		self.generator = Generator()
 		self.break_token = "end "
 		self.break_threshold = break_threshold
 	  
 	def add_tokens(self, metadata):
-		word = ""
 		transcripts = metadata.transcripts
 		transcript = transcripts[0]
 		tokens = transcript.tokens
@@ -30,31 +32,39 @@ class Parser:
 		
 		#Process the list of tokens
 		for token in tokens:
-			self.string.append(token.text)
+			self.current_string += token.text
 			if token.text == ' ':
 				if (token.start_time-last_token_time) > self.break_threshold:
-					self.string.append(self.break_token)
+					self.current_string += self.break_token
 			last_token_time = token.start_time
 			
 		#add newline
-		self.string.append("\n")
+		self.current_string += "\n"
 			
 	def finalize(self):
-		self.string.append(" ")
+		self.current_string += " "
 	
 	def get_latex_string(self):
-		success, output = self.generator.generate_latex_string(self.string.get())
+		success, self.current_output = self.generator.generate_latex_string(self.current_string)
 		if success:
-			return output
+			self.prev_string = self.current_string
+			self.prev_output = self.current_output
+			return success, self.current_output
 		else:
-			return "ERROR: Input is not valid LaTeX. Input: " + self.string.get()
+			print("ERROR: Input is not valid LaTeX. Input: " + self.current_string)
+			self.current_string = self.prev_string
+			self.current_output = self.prev_output
+			return success, self.prev_output
 	
 	def get_latex_doc(self):  
-		success, output = self.generator.generate_latex_doc(self.string.get())
+		success, latex_output = self.generator.generate_latex_doc(self.current_string)
 		if success:
-			return output
+			return latex_output
 		else:
 			return "ERROR: Input is not valid LaTeX"
 	
 	def clear(self):
-	  self.token_string.clear()
+	  self.current_string = ""
+	  self.current_output = ""
+	  self.prev_string = ""
+	  self.prev_output = ""

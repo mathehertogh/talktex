@@ -202,8 +202,9 @@ def main(ARGS):
 				wav_data = bytearray()
 			metadata = stream_context.finishStreamWithMetadata()
 			parser.add_tokens(metadata)
-			print(parser.get_latex_string())
-			if ARGS.autocompile:
+			success, latex_string = parser.get_latex_string()
+			print(latex_string)
+			if ARGS.autocompile and success:
 				compiler.compile(parser.get_latex_doc())
 			stream_context = model.createStream()
 
