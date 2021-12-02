@@ -159,12 +159,20 @@ symbol 			: DIGIT {
 						Con::Type::Digit, move_to_string($<phrase>1)
 					));
 				}
-				| variable {
+				| variable_seq {
 					$<tree>$ = new Syntax_tree(Con::Type::Symbol_variable);
 					move_in_subtree(*$<tree>$, $<tree>1);
 				}
 				| special_symbol {
 					$<tree>$ = new Syntax_tree(Con::Type::Symbol_special, $<ss_type>1);
+				};
+variable_seq	: variable_seq variable {
+					move_in_subtree(*$<tree>$, $<tree>1);
+					$<tree>$->append_subtree($<tree>2);
+				}
+				| variable {
+					$<tree>$ = new Syntax_tree(Con(Con::Type::Variable_sequence));
+					move_in_subtree(*$<tree>$, $<tree>1);
 				};
 variable 		: variable accent {
 					$<tree>$ = new Syntax_tree(Con(Con::Type::Variable_accent));

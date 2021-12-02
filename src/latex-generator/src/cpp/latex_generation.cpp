@@ -199,6 +199,12 @@ std::string to_latex(Syntax_tree::const_traverser t) {
 		return child(0);
 	case Construction::Type::Symbol_special:
 		return texify_special_symbol(get_special_symbol());
+	case Construction::Type::Variable_sequence: {
+		std::string latex;
+		for (const auto it = t->begin(); it != t->end(); it++)
+			latex += to_latex(*it) + " ";
+		return latex;
+	}
 	case Construction::Type::Variable_accent:
 		return child(1) + brace(child(0));
 	case Construction::Type::Variable_typesetting:

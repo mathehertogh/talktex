@@ -95,6 +95,7 @@ struct Construction {
 		Symbol_variable,
 		Symbol_digit,
 		Symbol_special,
+		Variable_sequence,
 		Variable_accent,
 		Variable_typesetting,
 		Variable_letter,
