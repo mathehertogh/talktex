@@ -40,7 +40,7 @@ extern "C" bool texify(const char* input, char* output, size_t output_size) {
 		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
 		output_string += generation::to_display_style(latex) + "\n";
 	}
-	if (output_string.size() > output_size) {
+	if (output_string.size() + 1 > output_size) {
 		std::cerr << "Could not copy LaTeX output into buffer: overflow" << std::endl;
 		return false;
 	}
@@ -60,8 +60,8 @@ extern "C" bool texify(const char* input, char* output, size_t output_size) {
  */
 extern "C" int talktex_header(char *buf, size_t buf_size) {
 	char *header = strdup(generation::talktex_header().c_str());
-	if (sizeof(header) > buf_size) {
-		std::cerr << "Could not copy header into buffer: overlflow" << std::endl;
+	if (strlen(header) + 1 > buf_size) {
+		std::cerr << "Could not copy header into buffer: overflow" << std::endl;
 		return false;
 	}
 	strcpy(buf, header);
@@ -76,7 +76,7 @@ extern "C" int talktex_header(char *buf, size_t buf_size) {
  */
 extern "C" int talktex_footer(char* buf, size_t buf_size) {
 	char *footer = strdup(generation::talktex_footer().c_str());
-	if (sizeof(footer) > buf_size) {
+	if (strlen(footer) + 1 > buf_size) {
 		std::cerr << "Could not copy footer into buffer: overflow" << std::endl;
 		return false;
 	}
