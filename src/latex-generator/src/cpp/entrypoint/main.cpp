@@ -52,12 +52,11 @@ extern "C" bool texify(const char* input, char* output, size_t output_size) {
  * Returns true if the header was succesfully written to [buf], and false otherwise.
  */
 extern "C" int talktex_header(char *buf, size_t buf_size) {
-	char *header = strdup(generation::talktex_header().c_str());
-	if (strlen(header) + 1 > buf_size) {
+	auto header = generation::talktex_header();
+	if (header.size() + 1 > buf_size) {
 		return false;
 	}
-	strcpy(buf, header);
-	free(header);
+	strcpy(buf, header.c_str());
 	return true;
 }
 
@@ -67,12 +66,11 @@ extern "C" int talktex_header(char *buf, size_t buf_size) {
  * Returns true if the footer was succesfully written to [buf], and false otherwise.
  */
 extern "C" int talktex_footer(char* buf, size_t buf_size) {
-	char *footer = strdup(generation::talktex_footer().c_str());
-	if (strlen(footer) + 1 > buf_size) {
+	auto footer = generation::talktex_footer();
+	if (footer.size() + 1 > buf_size) {
 		return false;
 	}
-	strcpy(buf, footer);
-	free(footer);
+	strcpy(buf, footer.c_str());
 	return true;
 }
 
