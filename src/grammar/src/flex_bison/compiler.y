@@ -57,7 +57,6 @@ static void yyerror(Syntax_visitor&, const char*);
 	Rangeop_type r_type;
 }
 
-/* TODO?: Start symbol */
 /* Note: if no start symbol is provided,
  	bison takes the first rule as start */
 /* %start program */
@@ -88,7 +87,7 @@ static void yyerror(Syntax_visitor&, const char*);
 %right END NOEND
 
 /*  If the token’s precedence is higher, the choice is to shift. If the rule’s precedence is higher, the choice is to reduce. If they have equal precedence, the choice is made based on the associativity of that precedence level. Each rule gets its precedence from the last terminal symbol mentioned in the components */
-%right OF NOT B_PLUS B_TIMES B_POWER B_DIV B_MID B_EQ B_ISO B_LT B_GT B_LE B_GE B_AND B_OR B_IMPL B_EQUIV B_CUP B_CAP B_SMINUS B_SUBSET B_IN MINUS
+%right OF NOT B_PLUS B_TIMES B_POWER B_DIV B_MID B_EQ B_ISO B_LT B_GT B_LE B_GE B_AND B_OR B_IMPL B_EQUIV B_CUP B_CAP B_SMINUS B_SUBSET B_IN MINUS 
 
 %parse-param {Syntax_visitor& syntax_visitor}
 
@@ -160,17 +159,16 @@ symbol 			: DIGIT {
 					));
 				}
 				| variable_seq {
-					$<tree>$ = new Syntax_tree(Con::Type::Symbol_variable);
-					move_in_subtree(*$<tree>$, $<tree>1);
+					$<tree>$ = $<tree>1;
 				}
 				| special_symbol {
 					$<tree>$ = new Syntax_tree(Con::Type::Symbol_special, $<ss_type>1);
 				};
-variable_seq	: variable_seq variable {
-					move_in_subtree(*$<tree>$, $<tree>1);
+variable_seq	: variable_seq variable %prec NOEND {
+					$<tree>$ = $<tree>1;
 					$<tree>$->append_subtree($<tree>2);
 				}
-				| variable {
+				| variable %prec END {
 					$<tree>$ = new Syntax_tree(Con(Con::Type::Variable_sequence));
 					move_in_subtree(*$<tree>$, $<tree>1);
 				};

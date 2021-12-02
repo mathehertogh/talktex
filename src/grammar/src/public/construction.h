@@ -244,6 +244,7 @@ inline std::string to_string(Construction::Type type) {
 	case Construction::Type::Symbol_variable: return "Symbol_variable";
 	case Construction::Type::Symbol_digit: return "Symbol_digit";
 	case Construction::Type::Symbol_special: return "Symbol_special";
+	case Construction::Type::Variable_sequence: return "Variable_sequence";
 	case Construction::Type::Variable_accent: return "Variable_accent";
 	case Construction::Type::Variable_typesetting: return "Variable_typesetting";
 	case Construction::Type::Variable_letter: return "Variable_letter";

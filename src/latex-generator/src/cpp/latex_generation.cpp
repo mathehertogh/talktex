@@ -201,7 +201,7 @@ std::string to_latex(Syntax_tree::const_traverser t) {
 		return texify_special_symbol(get_special_symbol());
 	case Construction::Type::Variable_sequence: {
 		std::string latex;
-		for (const auto it = t->begin(); it != t->end(); it++)
+		for (auto it = t.begin(); it != t.end(); it++)
 			latex += to_latex(*it) + " ";
 		return latex;
 	}
