@@ -36,6 +36,9 @@ class Parser:
 					self.string.append(self.break_token)
 			last_token_time = token.start_time
 			
+		#add newline
+		self.string.append("\n")
+			
 	def finalize(self):
 		self.string.append(" ")
 	
