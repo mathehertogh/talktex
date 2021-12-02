@@ -43,12 +43,7 @@ extern "C" bool texify(char* input, char* output, size_t output_size) {
 		std::cerr << "Could not copy LaTeX output into buffer: overflow" << std::endl;
 		return false;
 	}
-	std::cout << "Output string: " << output_string << std::endl;
-	std::cout << "output buffer size: " << output_size << std::endl;
-	std::cout << "copying..." << std::endl;
 	strcpy(output, output_string.c_str());
-	std::cout << "done copying" << std::endl;
-	std::cout << "output: " << output << std::endl;
 	//*output = strdup(output_string.c_str());
 	return success;
 }

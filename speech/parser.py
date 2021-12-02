@@ -44,7 +44,7 @@ class Parser:
 		if success:
 			return output
 		else:
-			return "ERROR: Input is not valid LaTeX"
+			return "ERROR: Input is not valid LaTeX. Input: " + self.string.get()
 	
 	def get_latex_doc(self):  
 		success, output = self.generator.generate_latex_doc(self.string.get())
@@ -52,6 +52,6 @@ class Parser:
 			return output
 		else:
 			return "ERROR: Input is not valid LaTeX"
-	  
+	
 	def clear(self):
 	  self.token_string.clear()
