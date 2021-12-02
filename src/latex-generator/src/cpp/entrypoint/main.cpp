@@ -10,6 +10,7 @@
 #include "latex_generation.h"
 #include "io_util.h"
 
+#define LATEX_MAX_SIZE 1048576 //1MB should do for now right?
 // =================================================================================================
 // C library API
 // =================================================================================================
@@ -25,7 +26,7 @@
  * The partial texifications of any erronous input lines, and the texifications of the lines after
  * any erronous input lines, are still included in the output.
  */
-extern "C" bool texify(char* input, char** output) {
+extern "C" bool texify(char* input, char* output, size_t output_size) {
 	bool success = true;
 	Logger logger(std::cerr, std::cerr, std::cerr);
 	Syntax_visitor visitor(logger);
@@ -38,29 +39,48 @@ extern "C" bool texify(char* input, char** output) {
 		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
 		output_string += generation::to_display_style(latex) + "\n";
 	}
-	*output = strdup(output_string.c_str());
+	if (output_string.size() > output_size) {
+		std::cerr << "Could not copy LaTeX output into buffer: overflow" << std::endl;
+		return false;
+	}
+	std::cout << "Output string: " << output_string << std::endl;
+	std::cout << "output buffer size: " << output_size << std::endl;
+	std::cout << "copying..." << std::endl;
+	strcpy(output, output_string.c_str());
+	std::cout << "done copying" << std::endl;
+	std::cout << "output: " << output << std::endl;
+	//*output = strdup(output_string.c_str());
 	return success;
 }
 
 /**
- * Returns the TalkTeX LaTeX header, including \begin{document}.
- * The returned string should be freed by the caller.
+ * Stores the TalkTeX LaTeX header, including \begin{document},
+ * into *buf. *buf should be allocated by caller.
  */
-extern "C" char* talktex_header() {
-	return strdup(generation::talktex_header().c_str());
+extern "C" int talktex_header(char *buf, size_t buf_size) {
+	char *header = strdup(generation::talktex_header().c_str()); 
+	if (sizeof(header) > buf_size) {
+		std::cerr << "Could not copy header into buffer: overlflow" << std::endl;
+		return false;
+	}
+	strcpy(buf, header);
+	free(header);
+	return true;
 }
 
 /**
- * Returns the TalkTeX LaTeX footer, including \end{document}.
- * The returned string should be freed by the caller.
+ * Stores the TalkTeX LaTeX footer, including \end{document},
+ * into *buf. *buf should be allocated by caller.
  */
-extern "C" char* talktex_footer() {
-	return strdup(generation::talktex_footer().c_str());
-}
-
-/** Frees [str] */
-extern "C" void free_string(char* str) {
-	free(str);
+extern "C" int talktex_footer(char *buf, size_t buf_size) {
+	char *footer = strdup(generation::talktex_footer().c_str());
+	if (sizeof(footer) > buf_size) {
+		std::cerr << "Could not copy footer into buffer: overflow" << std::endl;
+		return false;
+	}
+	strcpy(buf, footer);
+	free(footer);
+	return true;
 }
 
 // =================================================================================================
@@ -130,6 +150,7 @@ int main(int argc, char** argv) {
 
 		bool create_document = create_document_switch.getValue();
 		bool verbose = verbose_switch.getValue();
+		char* temp_str = (char*)malloc(LATEX_MAX_SIZE*sizeof(char));
 
 		if (verbose)
 			std::cerr << SEPARATOR;
@@ -138,7 +159,8 @@ int main(int argc, char** argv) {
 			if (verbose) {
 				std::cerr << "Header:\n\n";
 			}
-			std::cout << talktex_header();
+			talktex_header(temp_str, LATEX_MAX_SIZE*sizeof(char));
+			std::cout << temp_str;
 			if (verbose) {
 				std::cerr << SEPARATOR;
 			}
@@ -166,15 +188,17 @@ int main(int argc, char** argv) {
 			if (verbose) {
 				std::cerr << "Footer:\n\n";
 			}
-			std::cout << talktex_footer();
+			talktex_footer(temp_str, LATEX_MAX_SIZE*sizeof(char));
+			std::cout << temp_str;
 			if (verbose) {
 				std::cerr << SEPARATOR;
 			}
 		}
+		free(temp_str);
 
 	} catch (TCLAP::ArgException& e) {
 		std::cerr << aec_style::error << "command-line error: " << aec::reset << e.error()
-		          << " for arg " << e.argId() << std::endl;
+				  << " for arg " << e.argId() << std::endl;
 		return 1;
 	}
 
