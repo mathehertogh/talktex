@@ -19,14 +19,15 @@
  * Converts one or more lines of running text to corresponding LaTeX code, which can be used in
  * LaTeX text mode. One output line is generated for each input line.
  *
- * The running text should be given in [input]. The resulting LaTeX code is stored in *[output].
- * The pointers [input], *[output] and [output] should be freed by the caller.
+ * The running text should be given in [input]. The resulting LaTeX code is written to [output], if
+ * its character length is less then or equal to [output_size].
  *
- * Returns false if one of the lines could not be fully parsed, and true otherwise.
- * The partial texifications of any erronous input lines, and the texifications of the lines after
- * any erronous input lines, are still included in the output.
+ * Returns false if one of the lines could not be fully parsed, or if the the output character
+ * is greater than [output_size]. Otherwise, returns true.
+ * If any of the lines could not be parsed, their partial texifications, and the texifications of
+ * the lines after them, are still included in the output.
  */
-extern "C" bool texify(char* input, char* output, size_t output_size) {
+extern "C" bool texify(const char* input, char* output, size_t output_size) {
 	bool success = true;
 	Logger logger(std::cerr, std::cerr, std::cerr);
 	Syntax_visitor visitor(logger);
@@ -49,16 +50,16 @@ extern "C" bool texify(char* input, char* output, size_t output_size) {
 	strcpy(output, output_string.c_str());
 	std::cout << "done copying" << std::endl;
 	std::cout << "output: " << output << std::endl;
-	//*output = strdup(output_string.c_str());
 	return success;
 }
 
 /**
- * Stores the TalkTeX LaTeX header, including \begin{document},
- * into *buf. *buf should be allocated by caller.
+ * Writes the TalkTeX LaTeX header (including \begin{document}) to [buf], if its character length is
+ * less than or equal to [buf_size].
+ * Returns true if the header was succesfully written to [buf], and false otherwise.
  */
 extern "C" int talktex_header(char *buf, size_t buf_size) {
-	char *header = strdup(generation::talktex_header().c_str()); 
+	char *header = strdup(generation::talktex_header().c_str());
 	if (sizeof(header) > buf_size) {
 		std::cerr << "Could not copy header into buffer: overlflow" << std::endl;
 		return false;
@@ -69,10 +70,11 @@ extern "C" int talktex_header(char *buf, size_t buf_size) {
 }
 
 /**
- * Stores the TalkTeX LaTeX footer, including \end{document},
- * into *buf. *buf should be allocated by caller.
+ * Writes the TalkTeX LaTeX footer (including \end{document}) to [buf], if its character length is
+ * less than or equal to [buf_size].
+ * Returns true if the footer was succesfully written to [buf], and false otherwise.
  */
-extern "C" int talktex_footer(char *buf, size_t buf_size) {
+extern "C" int talktex_footer(char* buf, size_t buf_size) {
 	char *footer = strdup(generation::talktex_footer().c_str());
 	if (sizeof(footer) > buf_size) {
 		std::cerr << "Could not copy footer into buffer: overflow" << std::endl;
