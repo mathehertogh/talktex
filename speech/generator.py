@@ -40,8 +40,8 @@ class Generator:
 	def generate_latex_doc(self, token_string):
 		#Generate the header string
 		c_header_buffer = ct.create_string_buffer(LATEX_MAX_SIZE)
-		self.header(c_header_buffer, ct_sizeof(c_header_buffer))
-		header_string = header_buffer.value.decode('utf-8')
+		self.header(c_header_buffer, ct.sizeof(c_header_buffer))
+		header_string = c_header_buffer.value.decode('utf-8')
 		
 		#Generate the footer string
 		c_footer_buffer = ct.create_string_buffer(LATEX_MAX_SIZE)
@@ -49,7 +49,7 @@ class Generator:
 		footer_string = c_footer_buffer.value.decode('utf-8')
 		
 		#If appliccable, put everything together and return
-		success, latex_string = generate_latex_string(token_string)
+		success, latex_string = self.generate_latex_string(token_string)
 		if success:
 			return success, header_string + latex_string + footer_string
 		else:

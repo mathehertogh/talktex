@@ -10,7 +10,7 @@ from halo import Halo
 from scipy import signal
 
 from parser import Parser
-#from compiler import Compiler
+from compiler import Compiler
 logging.basicConfig(level=20)
 
 class Audio(object):
@@ -157,6 +157,10 @@ def main(ARGS):
 	# Create parser object
 	parser = Parser(ARGS.threshold)
 	
+	# Create compiler object
+	compiler = Compiler(ARGS.output)
+	compiler.initialize()
+	
 	# Load DeepSpeech model
 	if os.path.isdir(ARGS.model):
 		model_dir = ARGS.model
@@ -169,20 +173,6 @@ def main(ARGS):
 	if ARGS.scorer:
 		logging.info("ARGS.scorer: %s", ARGS.scorer)
 		model.enableExternalScorer(ARGS.scorer)
-
-	# Add hotwords to deepspeech model (if applicable)
-	if ARGS.vocabulary is not None:
-		filename = ARGS.vocabulary
-		boost = ARGS.boost
-
-		vocabfile = open(filename, 'r')
-		lines = vocabfile.readlines()
-		for line in lines:
-			word = line.strip()
-			print("Adding hotword " + word + " with boost " + str(boost))
-			#every line contains a single word (and is ignored otherwise)
-			model.addHotWord(word, boost)
-		vocabfile.close()
 		
 	# Start audio with VAD
 	vad_audio = VADAudio(aggressiveness=ARGS.vad_aggressiveness,
@@ -212,8 +202,9 @@ def main(ARGS):
 				wav_data = bytearray()
 			metadata = stream_context.finishStreamWithMetadata()
 			parser.add_tokens(metadata)
-			#parser.finalize() #add end token
 			print(parser.get_latex_string())
+			if ARGS.autocompile:
+				compiler.compile(parser.get_latex_doc())
 			stream_context = model.createStream()
 
 if __name__ == '__main__':
@@ -242,12 +233,10 @@ if __name__ == '__main__':
 						help=f"Input device sample rate. Default: {DEFAULT_SAMPLE_RATE}. Your device may require 44100.")
 	parser.add_argument('-t', '--threshold', type=int, default=DEFAULT_BREAK_THRESHOLD,
 											help=f"The threshold that determines whether a silence in speech is a space or an actual break. Default: {DEFAULT_BREAK_THRESHOLD}.")
-	parser.add_argument('-v', '--vocabulary',
-						help="Path to a vocabulary file (containing all possible words in the grammar")
-	parser.add_argument('-b', '--boost', type=float, default=1.0,
-						help="Boost to give to hotwords in vocabulary file (if provided)")
-	parser.add_argument('--auto-parse', action='store_true',
-						help="Automatically update PDF file after each utterance") 
+	parser.add_argument('--autocompile', action='store_true',
+						help="Automatically update PDF file after each utterance")
+	parser.add_argument('-o', '--output', default="latex-output/talktex",
+	                    help="The output destination for the LaTeX and PDF files") 
 	ARGS = parser.parse_args()
 	if ARGS.savewav: os.makedirs(ARGS.savewav, exist_ok=True)
 	main(ARGS)

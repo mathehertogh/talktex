@@ -1,0 +1,76 @@
+% Provides the \talktex command, which typesets the TalkTeX logo
+
+\ProvidesPackage{talktex}
+	[2021-10-01 v1.0.0 Typesetting the TalkTeX logo]
+
+\RequirePackage{graphicx} % \scalebox
+\RequirePackage{xspace}   % \xspace
+
+\makeatletter
+\newcommand{\talktex}{%
+	T%
+	\hspace{-.34em}%
+	\raisebox{-.32ex}{\scalebox{.79}[.85]{A}}%
+	\hspace{-.2em}%
+	L%
+	\hspace{-.3em}%
+	\raisebox{.33ex}{\scalebox{.79}{K}}%
+	\hspace{-.1em}%
+	\TeX%
+	\xspace
+}
+\makeatother
+
+% ===== Alt versions =====
+
+% \newcommand{\TalkTeX}{%
+% 	T%
+% 	\hspace{-.34em}%
+% 	\raisebox{-.33ex}{\scalebox{.79}[.85]{A}}%
+% 	\hspace{-.2em}%
+% 	L%
+% 	\hspace{-.16em}%
+% 	\raisebox{.59ex}{\scalebox{.63}{K}}%
+% 	\hspace{-.09em}%
+% 	\TeX%
+% 	\xspace
+% }
+% \newcommand{\TalkTeX}{%
+% 	T%
+% 	\hspace{-.38em}%
+% 	\raisebox{-.5ex}{\scalebox{.97}{\scalebox{.93}[1]{A}}}%
+% 	\hspace{-.23em}%
+% 	L%
+% 	\hspace{-.3em}%
+% 	\raisebox{.33ex}{\scalebox{.79}{K}}%
+% 	\hspace{-.1em}%
+% 	\TeX%
+% 	\xspace
+% }
+
+% ===== Implementation of \TeX and \LaTeX, for reference =====
+
+% === \TeX ===
+% T\kern-.1667em\lower.5ex\hbox{E}\kern-.125emX
+
+% === \LaTeX ===
+% \makeatletter
+% L%
+% \kern-.36em%
+% {%
+% \sbox\z@ T%
+% \vbox to\ht\z@{%
+% \hbox{%
+% \check@mathfonts
+% \fontsize\sf@size\z@
+% \math@fontsfalse
+% \selectfont
+% A%
+% }%
+% \vss
+% }%
+% }%
+% \kern-.15em%
+% \TeX
+% \makeatother
+% \fi
