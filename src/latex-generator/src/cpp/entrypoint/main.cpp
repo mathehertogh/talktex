@@ -16,7 +16,7 @@
 
 /**
  * Converts one or more lines of running text to corresponding LaTeX code, which can be used in
- * LaTeX text mode. One output line is generated for each input line.
+ * LaTeX text mode. One output line is generated for each input line. Empty lines are ignored
  *
  * The running text should be given in [input]. The resulting LaTeX code is written to [output], if
  * its character length is less then or equal to [output_size].
@@ -34,6 +34,7 @@ extern "C" bool texify(const char* input, char* output, size_t output_size) {
 	std::string line;
 	std::string output_string;
 	while (std::getline(ss, line)) {
+		if (line == "") continue; // Ignore empty lines
 		auto code = grammar::generate_from_string(line, visitor);
 		if (code != 0) success = false;
 		auto latex = generation::to_latex(visitor.syntax_tree.entrance());
@@ -96,6 +97,8 @@ bool convert_and_print(
 	bool success = true;
 	std::string line;
 	while (std::getline(is, line)) {
+		if (line == "") continue; // Ignore empty lines
+
 		if (verbose) std::cerr << "Input: " << aec_style::input << line << aec::reset << "\n";
 
 		auto code = grammar::generate_from_string(line, visitor);
