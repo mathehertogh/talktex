@@ -138,7 +138,7 @@ class VADAudio(Audio):
 			if not triggered:
 				ring_buffer.append((frame, is_speech))
 				num_voiced = len([f for f, speech in ring_buffer if speech])
-				if num_voiced > (ratio * ring_buffer.maxlen)/8:
+				if num_voiced > (ratio * ring_buffer.maxlen)/4:
 					triggered = True
 					for f, s in ring_buffer:
 						yield f
