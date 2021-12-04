@@ -33,6 +33,7 @@ guide for more info.
 ## Constructs
 
 Below we define all constructs of TalkTex.
+**NOTE**: The defined synonyms are not implemented yet
 
 ### DIGIT
 | phrase | target | priority | synonyms |
