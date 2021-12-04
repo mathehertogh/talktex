@@ -170,41 +170,12 @@ following behaviour. Below "..." denotes a pause in the users speech.
 | sin of a plus b       | \sin( a + b )                 |
 | sin of a ... plus b   | \sin( a ) + b                 |
 
-
-# Ignoring non-vocab words
-
-TalkTex will only apply construct rules if the spoken words of the user contain
-a substring of words that exactly match the phrase of the construct. For
-example, if the user says "function f from a to b" then this will match the
-phrase of the FUNCTION construct, while "function f g h from a to b" will not.
-
-To allow the user to speak a bit more freely, we loosed the situation above a
-bit. All words which are not in the TalkTex vocabulary (i.e. which are not
-keywords or terminals) are ignored by TalkTex. This means that you can say
-these so-called "non-vocab" words in between your phrases without affecting the
-TalkTex translation. For example, the words "which" and "goes" are non-vocab
-words and therefore the phrase "function f which goes from a to b" *will* be
-recognized as a FUNCTION construct. As the words "which" and "goes" are ignored
-by TalkTex, the phrase will be pre-parsed by TalkTex into the phrase "function f
-from a to b", which does match the FUNCTION construct phrase exactly.
-
-This allows for a broad range of "natural speech" to be blended into the phrases
-you talk into TalkTex, such as the following.
-
-| spoken phrase                                           | Latex source code translation |
-|---------------------------------------------------------|-------------------------------|
-| the sine of a ... is always greater or equal than alpha | \sin( a ) \geq \alpha         |
-
-Again, "..." denotes a pause in speech.
-
-
 # The complete TalkTex grammar
 
 See the [complete TalkTex grammar document](grammar.md) for information on all
 the vocabulary and grammar rules of TalkTex. These enable the user to *talk Tex*
-in many ways. Let us list some examples below.
+in many ways. We end with a final example, which combines various constructs into a longer sentence. 
 
 | spoken phrase                                                         | Latex source code translation   |
 |-----------------------------------------------------------------------|---------------------------------|
-| for all delta bigger than one we have that zero is smaller than alpha | \forall \alpha > 1 : 0 < \alpha |
-| sum from i equals zero to infinity of f of i                          | \sum_{i=0}^\infty (f(i))        |
+| sum from i equals zero to infinity sin of i                           | \sum_{i=0}^{\infty}\sin \left(i\right)        |

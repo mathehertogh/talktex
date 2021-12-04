@@ -99,12 +99,12 @@ Below we define all constructs of TalkTex.
 | phrase      | target  | priority | synonyms  |
 |-------------|---------|----------|-----------|
 | square root | \sqrt   | 10       |           |
-| sine        | \sin    | 10       |           |
-| cosine      | \cos    | 10       |           |
-| tangent     | \tan    | 10       |           |
-| exponent    | \exp    | 10       |           |
-| logarithm   | \log    | 10       |           |
-| negated     | \neg    | 10       |           |
+| sin         | \sin    | 10       | sine      |
+| cos         | \cos    | 10       | cosine    |
+| tang        | \tan    | 10       | tangent   |
+| exp         | \exp    | 10       | exponent  |
+| log         | \log    | 10       | logarithm |
+| negate      | \neg    | 10       | negated   |
 | for all     | \forall | 10       |           |
 | exists      | \exists | 10       |           |
 
@@ -117,7 +117,7 @@ Below we define all constructs of TalkTex.
 | power         | ^               | 10       |                            |
 | divided by    | /               | 10       | pipe                       |
 | divides       | \mid            | 10       |                            |
-| equal         | =               | 10       | equals                     |
+| equals        | =               | 10       | equal                      |
 | isomorphic    | \cong           | 10       |                            |
 | less          | <               | 10       | smaller                    |
 | greater       | >               | 10       | bigger, larger             |
