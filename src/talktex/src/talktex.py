@@ -213,6 +213,8 @@ if __name__ == '__main__':
 	DEFAULT_SAMPLE_RATE = 16000
 	DEFAULT_BREAK_THRESHOLD = 1
 
+	script_dir = os.path.dirname(os.path.realpath(__file__))
+
 	import argparse
 	parser = argparse.ArgumentParser(description="Stream from microphone to DeepSpeech using VAD")
 
@@ -225,9 +227,9 @@ if __name__ == '__main__':
 	parser.add_argument('-f', '--file',
 						help="Read from .wav file instead of microphone")
 
-	parser.add_argument('-m', '--model', required=True,
+	parser.add_argument('-m', '--model', default=f"{script_dir}/../deepspeech/models/deepspeech-0.9.3-models.pbmm",
 						help="Path to the model (protocol buffer binary file, or entire directory containing all standard-named files for model)")
-	parser.add_argument('-s', '--scorer',
+	parser.add_argument('-s', '--scorer', default=f"{script_dir}/../deepspeech/talktex.scorer",
 						help="Path to the external scorer file.")
 	parser.add_argument('-d', '--device', type=int, default=None,
 						help="Device input index (Int) as listed by pyaudio.PyAudio.get_device_info_by_index(). If not provided, falls back to PyAudio.get_default_device().")
@@ -237,8 +239,8 @@ if __name__ == '__main__':
 											help=f"The threshold that determines whether a silence in speech is a space or an actual break. Default: {DEFAULT_BREAK_THRESHOLD}.")
 	parser.add_argument('--autocompile', action='store_true',
 						help="Automatically update PDF file after each utterance")
-	parser.add_argument('-o', '--output', default="latex-output/talktex",
-	                    help="The output destination for the LaTeX and PDF files")
+	parser.add_argument('-o', '--output', default=f"{script_dir}/../../../latex-output",
+	                    help="The output directory for the LaTeX and PDF files")
 	ARGS = parser.parse_args()
 	if ARGS.savewav: os.makedirs(ARGS.savewav, exist_ok=True)
 	main(ARGS)
