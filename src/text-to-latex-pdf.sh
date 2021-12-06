@@ -5,7 +5,7 @@
 
 ####################################################################################################
 
-LATEX_OUTPUT_DIR="latex-output"
+LATEX_OUTPUT_DIR="../latex-output"
 
 ####################################################################################################
 
@@ -26,6 +26,6 @@ else
 fi
 
 mkdir -p "$LATEX_OUTPUT_DIR"
-cp "src/latex/talktex.sty" "$LATEX_OUTPUT_DIR"
-src/compiler/run-latex-generator.sh -d -i "$input" > "$LATEX_OUTPUT_DIR/output.tex"
-src/latex/render-latex.sh "$LATEX_OUTPUT_DIR/output.tex"
+cp "latex/talktex.sty" "$LATEX_OUTPUT_DIR"
+compiler/run-latex-generator.sh -d -i "$input" > "$LATEX_OUTPUT_DIR/output.tex"
+latex/render-latex.sh "$LATEX_OUTPUT_DIR/output.tex"
