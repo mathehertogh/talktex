@@ -1,14 +1,21 @@
-import subprocess as sp
 import os
+import subprocess as sp
+from shutil import copyfile
 
-OUTPUT_FILENAME_ROOT="output"
+OUTPUT_FILENAME_ROOT = "output"
 DEFAULT_LATEX_STRING = "\\documentclass{article} \\begin{document} Lorem \\end{document}"
+TALKTEX_PACKAGE_FILENAME = "talktex.sty"
+TALKTEX_PACKAGE_RELATIVE_DIR_PATH = "../../latex"
 
 class Compiler:
-	def __init__(self, output_dir_path):
+	def __init__(self, script_dir, output_dir_path):
 		self.output_dir_path = output_dir_path
 		self.output_tex_path = os.path.join(output_dir_path, OUTPUT_FILENAME_ROOT + ".tex")
 		self.output_pdf_path = os.path.join(output_dir_path, OUTPUT_FILENAME_ROOT + ".pdf")
+		self.output_talktex_package_path = os.path.join(output_dir_path, TALKTEX_PACKAGE_FILENAME)
+		self.talktex_package_path = os.path.join(
+			script_dir, TALKTEX_PACKAGE_RELATIVE_DIR_PATH, TALKTEX_PACKAGE_FILENAME)
+
 		self.reader_process = None
 
 
@@ -28,6 +35,9 @@ class Compiler:
 	def initialize(self, latex_string=DEFAULT_LATEX_STRING):
 		# Create output directory if needed
 		os.makedirs(self.output_dir_path, exist_ok=True)
+
+		# Copy talktex.sty to output directory
+		copyfile(self.talktex_package_path, self.output_talktex_package_path)
 
 		# Write LaTeX string to LaTeX file
 		f = open(self.output_tex_path, 'w+')

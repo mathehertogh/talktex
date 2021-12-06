@@ -153,12 +153,12 @@ class VADAudio(Audio):
 					yield None
 					ring_buffer.clear()
 
-def main(ARGS):
+def main(script_dir, ARGS):
 	# Create parser object
 	parser = Parser(ARGS.threshold)
 
 	# Create compiler object
-	compiler = Compiler(ARGS.output)
+	compiler = Compiler(script_dir, ARGS.output)
 	compiler.initialize()
 
 	# Load DeepSpeech model
@@ -243,4 +243,4 @@ if __name__ == '__main__':
 	                    help="The output directory for the LaTeX and PDF files")
 	ARGS = parser.parse_args()
 	if ARGS.savewav: os.makedirs(ARGS.savewav, exist_ok=True)
-	main(ARGS)
+	main(script_dir, ARGS)
