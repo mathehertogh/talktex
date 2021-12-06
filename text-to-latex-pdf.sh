@@ -1,14 +1,18 @@
 #!/bin/bash
 
-# This script converts lines of text on stdin to latex, builds the pdf and opens it
+# This script converts lines of text given in the first argument or via standard in to latex,
+# builds a pdf and opens it
 
-BUILD_DIR="build"
+####################################################################################################
+
+LATEX_OUTPUT_DIR="latex-output"
+
+####################################################################################################
 
 set -e # Quit on error
-
-# Go to this script's directory
 cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" >/dev/null
 
+####################################################################################################
 
 input=""
 if [[ $# -eq 0 ]]; then
@@ -21,6 +25,7 @@ else
 	exit 1
 fi
 
-
-"./run-latex-generator.sh" -d -i "$input" > "latex/talktex-output/output.tex"
-"latex/render-latex.sh" "latex/talktex-output/output.tex"
+mkdir -p "$LATEX_OUTPUT_DIR"
+cp "src/latex/talktex.sty" "$LATEX_OUTPUT_DIR"
+src/compiler/run-latex-generator.sh -d -i "$input" > "$LATEX_OUTPUT_DIR/output.tex"
+src/latex/render-latex.sh "$LATEX_OUTPUT_DIR/output.tex"

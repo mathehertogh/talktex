@@ -1,20 +1,17 @@
 #!/bin/bash
 
-BUILD_DIR="build"
-MODEL_DIR="deepspeech-models"
-
 set -e # Quit on error
-
-# Go to this script's directory
 cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" >/dev/null
 
+####################################################################################################
 
-sudo apt install flex bison alsa-utils portaudio19-dev
+echo "$(tput bold)TalkTeX: Starting Ubuntu-specific setup...$(tput sgr0)"
+echo ""
+
+sudo apt install wget flex bison python3 python3-pip alsa-utils portaudio19-dev latexmk
 pip3 install meson ninja deepspeech pyaudio webrtcvad halo --user
 
-mkdir -p "$MODEL_DIR"
-wget https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm -O "$MODEL_DIR/deepspeech-0.9.3-models.pbmm"
+echo ""
+echo "$(tput bold; tput setaf 2)TalkTeX: Ubuntu-specific setup succesful!$(tput sgr0)"
 
-mkdir -p "$BUILD_DIR"
-cd "$BUILD_DIR"
-meson ..
+./setup-common.sh

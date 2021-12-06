@@ -1,6 +1,6 @@
 import ctypes as ct
 
-GENERATOR_PATH="../build/src/latex-generator/libcompiler_latex_generator.so"
+GENERATOR_PATH="../../compiler/build/src/latex-generator/libcompiler_latex_generator.so"
 LATEX_MAX_SIZE = 1048576 #1MB should do for now right?
 
 class Generator:

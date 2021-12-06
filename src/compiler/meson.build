@@ -15,7 +15,7 @@ flex_gen = generator(
 bison = find_program('bison', required: true)
 
 # check bison version
-version_checker = find_program('version_extractor.sh', required: true)
+version_checker = find_program('bison/version_extractor.sh', required: true)
 r = run_command(version_checker, check: true)
 version = r.stdout().strip()
 # -Wcounterexamples available on version 3.7.6
@@ -42,4 +42,3 @@ builddir = join_paths(meson.source_root(), builddir_name)
 subdir('src/general')
 subdir('src/grammar')
 subdir('src/latex-generator')
-subdir('src/deepspeech')
