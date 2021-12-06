@@ -155,7 +155,7 @@ class VADAudio(Audio):
 
 def main(script_dir, ARGS):
 	# Create parser object
-	parser = Parser(ARGS.threshold)
+	parser = Parser(script_dir, ARGS.threshold)
 
 	# Create compiler object
 	if not ARGS.no_autocompile:

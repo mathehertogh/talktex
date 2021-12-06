@@ -1,11 +1,13 @@
+import os
 import ctypes as ct
 
-GENERATOR_PATH="../../compiler/build/src/latex-generator/libcompiler_latex_generator.so"
+
+GENERATOR_RELATIVE_PATH = "../../compiler/build/src/latex-generator/libcompiler_latex_generator.so"
 LATEX_MAX_SIZE = 1048576 #1MB should do for now right?
 
 class Generator:
-	def __init__(self):
-		self.lib = ct.cdll.LoadLibrary(GENERATOR_PATH)
+	def __init__(self, script_dir):
+		self.lib = ct.cdll.LoadLibrary(os.path.join(script_dir, GENERATOR_RELATIVE_PATH))
 
 		#Function that converts running text into latex
 		self.texify = self.lib.texify
