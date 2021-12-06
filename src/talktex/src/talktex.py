@@ -158,7 +158,7 @@ def main(script_dir, ARGS):
 	parser = Parser(ARGS.threshold)
 
 	# Create compiler object
-	if ARGS.autocompile:
+	if not ARGS.no_autocompile:
 		compiler = Compiler(script_dir, ARGS.output)
 		compiler.initialize()
 
@@ -206,7 +206,7 @@ def main(script_dir, ARGS):
 			success, latex_string = parser.get_latex_string()
 			if success:
 				print(latex_string)
-				if ARGS.autocompile and success:
+				if not ARGS.no_autocompile and success:
 					compiler.compile(parser.get_latex_doc())
 			stream_context = model.createStream()
 
@@ -238,8 +238,8 @@ if __name__ == '__main__':
 						help=f"Input device sample rate. Default: {DEFAULT_SAMPLE_RATE}. Your device may require 44100.")
 	parser.add_argument('-t', '--threshold', type=int, default=DEFAULT_BREAK_THRESHOLD,
 											help=f"The threshold that determines whether a silence in speech is a space or an actual break. Default: {DEFAULT_BREAK_THRESHOLD}.")
-	parser.add_argument('--autocompile', action='store_true',
-						help="Automatically update PDF file after each utterance")
+	parser.add_argument('--no-autocompile', action='store_true',
+						help="Do not write output to a file and do not compile it to a pdf")
 	parser.add_argument('-o', '--output', default=f"{script_dir}/../../../latex-output",
 	                    help="The output directory for the LaTeX and PDF files")
 	ARGS = parser.parse_args()
