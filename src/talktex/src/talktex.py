@@ -13,6 +13,7 @@ from scipy import signal
 
 from parser import Parser
 from compiler import Compiler
+from generator import Generator
 logging.basicConfig(level=20)
 
 class Audio(object):
@@ -162,7 +163,9 @@ def main(script_dir, ARGS):
 	# Create compiler object
 	if not ARGS.no_autocompile:
 		compiler = Compiler(script_dir, ARGS.output)
-		compiler.initialize()
+		# We assume that generator.generate_latex_doc always succeeds on an empty string, which
+		# relies on the latex generator binary succeeding on an empty string.
+		compiler.initialize(Generator(script_dir).generate_latex_doc("")[1])
 
 	# Load DeepSpeech model
 	if os.path.isdir(ARGS.model):

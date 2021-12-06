@@ -3,7 +3,6 @@ import subprocess as sp
 from shutil import copyfile
 
 OUTPUT_FILENAME_ROOT = "output"
-DEFAULT_LATEX_STRING = "\\documentclass{article} \\begin{document} Lorem \\end{document}"
 TALKTEX_PACKAGE_FILENAME = "talktex.sty"
 TALKTEX_PACKAGE_RELATIVE_DIR_PATH = "../../latex"
 
@@ -19,7 +18,7 @@ class Compiler:
 		self.reader_process = None
 
 
-	def compile(self, latex_string=DEFAULT_LATEX_STRING):
+	def compile(self, latex_string):
 		# Write LaTeX string to LaTeX file
 		f = open(self.output_tex_path, 'w+')
 		f.write(latex_string)
@@ -32,7 +31,7 @@ class Compiler:
 		         stderr=sp.DEVNULL)
 
 
-	def initialize(self, latex_string=DEFAULT_LATEX_STRING):
+	def initialize(self, latex_string):
 		# Create output directory if needed
 		os.makedirs(self.output_dir_path, exist_ok=True)
 
