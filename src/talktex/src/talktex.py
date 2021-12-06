@@ -158,8 +158,9 @@ def main(script_dir, ARGS):
 	parser = Parser(ARGS.threshold)
 
 	# Create compiler object
-	compiler = Compiler(script_dir, ARGS.output)
-	compiler.initialize()
+	if ARGS.autocompile:
+		compiler = Compiler(script_dir, ARGS.output)
+		compiler.initialize()
 
 	# Load DeepSpeech model
 	if os.path.isdir(ARGS.model):
