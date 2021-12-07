@@ -21,7 +21,7 @@ sudo apt-get install flex bison
 ```bash
 pip3 install meson ninja --user
 ```
-See our [Meson-manual](MESON.md) for more information
+See our [Meson-manual](src/compiler/MESON.md) for more information
 
 # User guide
 
