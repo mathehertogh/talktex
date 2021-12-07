@@ -1,5 +1,7 @@
 docs
+images
 src
+.gitignore
 ACKNOWLEDGEMENTS.md
 LICENSE.txt
 make-all.sh
