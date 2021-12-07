@@ -1,0 +1,9 @@
+docs
+src
+ACKNOWLEDGEMENTS.md
+LICENSE.txt
+README.md
+setup-common.sh
+setup-ubuntu.sh
+talktex
+text-to-latex-pdf
