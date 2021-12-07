@@ -16,6 +16,9 @@ script_dir=$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" >/dev
 echo "$(tput bold)TalkTeX: Starting common setup...$(tput sgr0)"
 echo ""
 
+# Install python libraries
+pip3 install meson ninja deepspeech pyaudio webrtcvad halo --user
+
 # Setup compiler
 cd "$script_dir/$COMPILER_DIR"
 	mkdir -p "$COMPILER_BUILD_DIR"
