@@ -64,7 +64,7 @@ class Parser:
 			return "ERROR: Input is not valid LaTeX"
 
 	def clear(self):
-	  self.current_string = ""
-	  self.current_output = ""
-	  self.prev_string = ""
-	  self.prev_output = ""
+		self.current_string = ""
+		self.current_output = ""
+		self.prev_string = ""
+		self.prev_output = ""
