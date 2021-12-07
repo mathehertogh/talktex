@@ -3,7 +3,7 @@ Meson is a modern, speedy, platform-independent, incremental compiler.
 In Meson, we use a python-like syntax to define sources, dependencies, generators etc etc.
 In this Section, we explain the basics of using Meson.
 
->Note: For these instructions we took inspiration from the Compiler Construction project by Sebastiaan Alvarez Rodriguez and Mariska IJpelaar
+>Note: For these instructions we took inspiration from the [Compiler Construction project](https://github.com/alexandru-uta/liacs-coco-public/blob/master/assignment_4/docs/MESON.md) by Sebastiaan Alvarez Rodriguez and Mariska IJpelaar
 
 
 ## Installing Meson
@@ -60,14 +60,15 @@ After (re)building the compilation files, (re)compile using `ninja`.
 
 ## Executable and Library Locations
 Compiled executables and libraries can be found in `build/`. The exact locations for each binary:
+* general:
+   - `build/src/general/libgeneral.so`
 * grammar:
    - `build/src/grammar/compiler_grammar`
    - `build/src/grammar/libgrammar.so`
 * latex-generator:
    - `build/src/latex-generator/compiler_latex_generator`
-   - `build/src/latex-generator/liblatexgenerator.so`
-
-> **Note**: generation of these executables is currently not activated, only the libraries are compiled
+   - `build/src/latex-generator/liblatex-generator.so`
+   - `build/src/latex-generator/libcompiler_latex_generator.so`
 
 Of course, you have to compile these modules to make the listed binaries available.
 

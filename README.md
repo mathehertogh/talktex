@@ -6,22 +6,31 @@ TalkTex is a tool for converting speech to Latex.
 
 # Status
 
-The project is currently under (heavy) development and is not yet functional.
+Our first version is available for usage
 
-# Installation
+# Installation and Usage
 
-While under heavy development, we have a few installation instructions ready:
-
-## Linux
-1. Install flex and bison using
-```bash
-sudo apt-get install flex bison
+## Setup 
+If you have Ubuntu with root privileges then you can use the [ubuntu-setup](setup-ubuntu.sh) script to perform the setups.
+```shell
+./setup-ubuntu.sh
 ```
-2. Install meson and ninja using
-```bash
-pip3 install meson ninja --user
+Otherwise, you need to find a way to manually install the packages from the [ubuntu-setup](setup-ubuntu.sh) and run [common-setup](setup-common.sh)
+```shell
+./setup-common.sh
 ```
-See our [Meson-manual](src/compiler/MESON.md) for more information
+
+## Build
+Run the following command:
+```shell
+./make-all.sh
+``` 
+
+## Usage
+For the default parameters, simply run the generated `talktex` command (a symlink to the actual executable). 
+
+# Meson
+We use Meson for our build system. If you want to read about its usage, you may read our [Meson-manual](src/compiler/MESON.md) for more information.
 
 # User guide
 
