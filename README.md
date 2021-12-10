@@ -29,7 +29,8 @@ Run the following command:
 ## Setup on university computers
 To set up and compile TalkTex for the Leiden University computers in the computer labs, run:
 ```shell 
-./setup-302_306.sh```
+./setup-302_306.sh
+```
 This will install the required Ubuntu packages and Python modules (that are not already installed) in user-mode. This script also performs compilation, so after running it you are ready to start using TalkTex.  
 
 ## Usage
